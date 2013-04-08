@@ -41,7 +41,7 @@ public class TownPlayer {
      * @return
      */
     public Town getTown() {
-        return null;// TODO
+        return TownManager.get().getTown(data.townName);
     }
 
     /**
