@@ -19,6 +19,14 @@ public class UnclaimCommand implements FSTCommand {
     }
 
     public String getBase() {
-        throw new UnsupportedOperationException("Method 'getBase' in class 'ClaimCommand' is not supported yet.");
+        return "/unclaim";
+    }
+
+    public String getUsage() {
+        return "/unclaim";
+    }
+
+    public String getDescription() {
+        return "Unclaims the chunk you are standing in.";
     }
 }

@@ -215,5 +215,12 @@ public class FSTChunk {
         return true;
     }
 
+    public boolean equals(FSTChunk chunk) {
+        if(chunk == null) {
+            return false;
+        }
+        return chunk.getTownName().equals(this.getTownName());
+    }
+
 
 }

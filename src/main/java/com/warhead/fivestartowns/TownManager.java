@@ -16,6 +16,7 @@ import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.database.DataAccess;
 import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseReadException;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 
 /**
  *
@@ -88,4 +89,43 @@ public class TownManager {
         return null;
     }
 
+    public void addTown(TownAccess data) {
+        try {
+            towns.put(data.name, data);
+            Database.get().insert(data);
+        } catch (DatabaseWriteException ex) {
+            Canary.logStackTrace("Error Adding Town at: " + data.toString(), ex);
+        }
+    }
+
+    public void removeTown(TownAccess data) {
+        try {
+            if (towns.containsKey(data.name)) {
+                Database.get().remove(data.getName(), new String[] {"name"}, new Object[] {data.name});
+                towns.remove(data.name);
+            }
+        } catch (DatabaseWriteException ex) {
+            Canary.logStackTrace("Error Deleting Town at: " + data.toString(), ex);
+        }
+    }
+
+    public void addTownPlayer(TownPlayerAccess data) {
+        try {
+            players.put(data.name, data);
+            Database.get().insert(data);
+        } catch (DatabaseWriteException ex) {
+            Canary.logStackTrace("Error Adding Town Player at: " + data.toString(), ex);
+        }
+    }
+
+    public void removeTownPlayer(TownPlayerAccess data) {
+        try {
+            if (players.containsKey(data.name)) {
+                Database.get().remove(data.getName(), new String[] {"name"}, new Object[] {data.name});
+                players.remove(data.name);
+            }
+        } catch (DatabaseWriteException ex) {
+            Canary.logStackTrace("Error Deleting Town Player at: " + data.toString(), ex);
+        }
+    }
 }

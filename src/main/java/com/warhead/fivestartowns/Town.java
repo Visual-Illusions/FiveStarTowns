@@ -62,7 +62,7 @@ public class Town {
      * @return
      */
     public int getMemberSize() {
-        return data.members.size();
+        return data.members.size() + data.assistant.size() + 1;
     }
 
     /**
@@ -388,7 +388,7 @@ public class Town {
      * @return
      */
     public String getFarewell() {
-        return data.welcome;
+        return data.farewell;
     }
 
     /**
@@ -411,6 +411,7 @@ public class Town {
 
     /**
      * Sets the message displayed upon entering this town.
+     *
      * @param msg
      */
     public boolean setWelcome(String msg) {
@@ -424,5 +425,23 @@ public class Town {
             Canary.logStackTrace("Error updating 'welcome' in '" + this.getName() + "'. ", ex);
         }
         return true;
+    }
+
+    /**
+     * The most chunks that this town can claim
+     *
+     * @return
+     */
+    public int getMaxClaimCount() {
+        return this.getMemberSize() * Config.get().getChunksPerPlayer();
+    }
+
+    /**
+     * The current amount of chunks that this town has claimed.
+     *
+     * @return
+     */
+    public int getCurrentClaimCount() {
+        return ChunkManager.get().getTownChunks(this.getName()).length;
     }
 }

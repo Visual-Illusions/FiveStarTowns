@@ -6,6 +6,16 @@
  */
 package com.warhead.fivestartowns;
 
+import com.warhead.fivestartowns.database.ChunkAccess;
+import com.warhead.fivestartowns.database.TownAccess;
+import com.warhead.fivestartowns.database.TownPlayerAccess;
+import com.warhead.fivestartowns.listeners.CommandListener;
+import com.warhead.fivestartowns.listeners.FiveStarTownsListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.canarymod.Canary;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.canarymod.plugin.Plugin;
 
 /**
@@ -14,14 +24,37 @@ import net.canarymod.plugin.Plugin;
  */
 public class FiveStarTowns extends Plugin{
 
-    @Override
-    public void enable() {
-        throw new UnsupportedOperationException("Method 'enable' in class 'FiveStarTowns' is not supported yet.");
+    private CommandListener commands;
+    private FiveStarTownsListener listener;
+    private static FiveStarTowns instance;
+
+
+    public boolean enable() {
+        instance = this;
+        this.createTables();
+        commands = new CommandListener();
+        listener = new FiveStarTownsListener();
+        Canary.hooks().registerListener(commands, this);
+        Canary.hooks().registerListener(listener, this);
+        return true;
     }
 
     @Override
     public void disable() {
-        throw new UnsupportedOperationException("Method 'disable' in class 'FiveStarTowns' is not supported yet.");
+    }
+
+    public static FiveStarTowns get() {
+        return instance;
+    }
+
+    public void createTables() {
+        try {
+            Database.get().updateSchema(new ChunkAccess());
+            Database.get().updateSchema(new TownAccess());
+            Database.get().updateSchema(new TownPlayerAccess());
+        } catch (DatabaseWriteException ex) {
+            Logger.getLogger(FiveStarTowns.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

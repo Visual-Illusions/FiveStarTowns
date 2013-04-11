@@ -17,4 +17,8 @@ public interface FSTCommand {
     public void execute(Player player, String[] command);
 
     public String getBase();
+
+    public String getUsage();
+
+    public String getDescription();
 }
