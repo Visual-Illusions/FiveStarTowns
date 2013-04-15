@@ -6,7 +6,14 @@
  */
 package com.warhead.fivestartowns.listeners.commands;
 
+import com.warhead.fivestartowns.plot.PlotManager;
+import com.warhead.fivestartowns.Config;
+import com.warhead.fivestartowns.plot.Plot;
+import com.warhead.fivestartowns.town.Town;
+import com.warhead.fivestartowns.town.TownManager;
+import com.warhead.fivestartowns.town.TownPlayer;
 import net.canarymod.api.entity.living.humanoid.Player;
+import net.canarymod.chat.Colors;
 
 /**
  *
@@ -15,7 +22,17 @@ import net.canarymod.api.entity.living.humanoid.Player;
 public class UnclaimCommand implements FSTCommand {
 
     public void execute(Player player, String[] command) {
-        throw new UnsupportedOperationException("Method 'execute' in class 'ClaimCommand' is not supported yet.");
+        Plot plot = PlotManager.get().getFSTPlot(player);
+        Town town = TownManager.get().getTownFromPlayer(player);
+        if (plot == null || !plot.getTown().equals(town)) {
+            player.sendMessage(Config.get().getMessageHeader() + "This plots is "
+                    + "not owned by your town. You cannot unclaim it.");
+            return;
+        }
+        PlotManager.get().removePlot(plot.getAccess());
+
+        player.sendMessage(Config.get().getMessageHeader() + "Plot UnClaimed for " + Colors.GREEN + town.getName() + "!");
+
     }
 
     public String getBase() {
@@ -27,6 +44,17 @@ public class UnclaimCommand implements FSTCommand {
     }
 
     public String getDescription() {
-        return "Unclaims the chunk you are standing in.";
+        return "Unclaims the plot you are standing in.";
+    }
+
+    public boolean canUseCommand(Player player) {
+        TownPlayer tp = TownManager.get().getTownPlayer(player);
+        if (tp != null && (tp.isAssistant() || tp.isOwner())) {
+            player.sendMessage(Config.get().getMessageHeader() + "You must be a "
+                    + "town " + Colors.GREEN + "Owner " + Colors.WHITE + "or "
+                    + Colors.GREEN + "Assistant " + Colors.WHITE + "to use this command!");
+            return false;
+        }
+        return true;
     }
 }

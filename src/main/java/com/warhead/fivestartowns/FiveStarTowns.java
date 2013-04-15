@@ -6,7 +6,7 @@
  */
 package com.warhead.fivestartowns;
 
-import com.warhead.fivestartowns.database.ChunkAccess;
+import com.warhead.fivestartowns.database.PlotAccess;
 import com.warhead.fivestartowns.database.TownAccess;
 import com.warhead.fivestartowns.database.TownPlayerAccess;
 import com.warhead.fivestartowns.listeners.CommandListener;
@@ -49,7 +49,7 @@ public class FiveStarTowns extends Plugin{
 
     public void createTables() {
         try {
-            Database.get().updateSchema(new ChunkAccess());
+            Database.get().updateSchema(new PlotAccess());
             Database.get().updateSchema(new TownAccess());
             Database.get().updateSchema(new TownPlayerAccess());
         } catch (DatabaseWriteException ex) {

@@ -21,4 +21,6 @@ public interface FSTCommand {
     public String getUsage();
 
     public String getDescription();
+
+    public boolean canUseCommand(Player player);
 }

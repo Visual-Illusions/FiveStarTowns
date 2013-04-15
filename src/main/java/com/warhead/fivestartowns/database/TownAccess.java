@@ -44,8 +44,8 @@ public class TownAccess extends DataAccess {
     @Column(columnName = "balance", dataType = Column.DataType.DOUBLE)
     public double balance;
 
-    @Column(columnName = "bonusChunks", dataType = Column.DataType.INTEGER)
-    public int bonusChunks;
+    @Column(columnName = "bonusPlots", dataType = Column.DataType.INTEGER)
+    public int bonusPlots;
 
     @Column(columnName = "nopvp", dataType = Column.DataType.BOOLEAN)
     public boolean nopvp;

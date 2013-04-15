@@ -6,13 +6,13 @@
  */
 package com.warhead.fivestartowns.listeners.commands;
 
-import com.warhead.fivestartowns.ChunkManager;
+import com.warhead.fivestartowns.plot.PlotManager;
 import com.warhead.fivestartowns.Config;
-import com.warhead.fivestartowns.FSTChunk;
-import com.warhead.fivestartowns.Town;
-import com.warhead.fivestartowns.TownManager;
-import com.warhead.fivestartowns.database.ChunkAccess;
-import net.canarymod.Canary;
+import com.warhead.fivestartowns.plot.Plot;
+import com.warhead.fivestartowns.town.Town;
+import com.warhead.fivestartowns.town.TownManager;
+import com.warhead.fivestartowns.town.TownPlayer;
+import com.warhead.fivestartowns.database.PlotAccess;
 import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.api.world.position.Location;
 import net.canarymod.chat.Colors;
@@ -24,10 +24,9 @@ import net.canarymod.chat.Colors;
 public class ClaimCommand implements FSTCommand {
 
     public void execute(Player player, String[] command) {
-        Canary.logInfo(player.getWorld().getName());
-        FSTChunk chunk = ChunkManager.get().getFSTChunk(player);
-        if (chunk != null) {
-            player.sendMessage(Config.get().getMessageHeader() + "This chunks is already owned by: " + chunk.getTownName());
+        Plot plot = PlotManager.get().getFSTPlot(player);
+        if (plot != null) {
+            player.sendMessage(Config.get().getMessageHeader() + "This plots is already owned by: " + plot.getTownName());
             return;
         }
         Town town = TownManager.get().getTownFromPlayer(player);
@@ -36,17 +35,17 @@ public class ClaimCommand implements FSTCommand {
             return;
         }
         if (town.getCurrentClaimCount() >= town.getMaxClaimCount()) {
-            player.sendMessage(Config.get().getMessageHeader() + "Your town has already claimed too many chunks! "
+            player.sendMessage(Config.get().getMessageHeader() + "Your town has already claimed too many plots! "
                     + "Consider unclaiming some.");
             return;
         }
-        if (!ChunkManager.get().isChunkNextToTown(player.getLocation(), town.getName()) && ChunkManager.get().getTownChunks(town.getName()).length != 0) {
-            player.sendMessage(Config.get().getMessageHeader() + "Your town does not sit adjacent to this chunk! "
-                    + "Try claiming a chunk next to your town.");
+        if (!PlotManager.get().isPlotNextToTown(player.getLocation(), town.getName()) && PlotManager.get().getTownPlots(town.getName()).length != 0) {
+            player.sendMessage(Config.get().getMessageHeader() + "Your town does not sit adjacent to this plot! "
+                    + "Try claiming a plot next to your town.");
             return;
         }
         Location loc = player.getLocation();
-        ChunkAccess data = new ChunkAccess();
+        PlotAccess data = new PlotAccess();
         data.x = ((int)loc.getX()) >> 4;
         data.z = ((int)loc.getZ()) >> 4;
         data.world = loc.getWorldName();
@@ -57,7 +56,7 @@ public class ClaimCommand implements FSTCommand {
         data.sanctuary = town.getSanctuary();
         data.town = town.getName();
         data.owner = "";
-        ChunkManager.get().addChunk(data);
+        PlotManager.get().addPlot(data);
 
         player.sendMessage(Config.get().getMessageHeader() + "Plot Claimed for " + Colors.GREEN + town.getName() + "!");
 
@@ -72,7 +71,18 @@ public class ClaimCommand implements FSTCommand {
     }
 
     public String getDescription() {
-        return "Claims the chunk you are standing in.";
+        return "Claims the plot you are standing in.";
+    }
+
+    public boolean canUseCommand(Player player) {
+        TownPlayer tp = TownManager.get().getTownPlayer(player);
+        if (tp != null && (tp.isAssistant() || tp.isOwner())) {
+            player.sendMessage(Config.get().getMessageHeader() + "You must be a "
+                    + "town " + Colors.GREEN + "Owner " + Colors.WHITE + "or "
+                    + Colors.GREEN + "Assistant " + Colors.WHITE + "to use this command!");
+            return false;
+        }
+        return true;
     }
 
 }

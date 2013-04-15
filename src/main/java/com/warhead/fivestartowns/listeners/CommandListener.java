@@ -9,7 +9,6 @@ package com.warhead.fivestartowns.listeners;
 import com.warhead.fivestartowns.listeners.commands.*;
 import java.util.Arrays;
 import java.util.HashMap;
-import net.canarymod.Canary;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.command.PlayerCommandHook;
 import net.canarymod.plugin.PluginListener;
@@ -23,7 +22,6 @@ public class CommandListener implements PluginListener {
     private HashMap<String, FSTCommand> commands;
 
     public CommandListener() {
-//        commands;
         commands = new HashMap<String, FSTCommand>();
         init();
     }
@@ -31,42 +29,44 @@ public class CommandListener implements PluginListener {
     @HookHandler
     public void onPlayerCommand(PlayerCommandHook hook) {
         String[] command = hook.getCommand();
-        /*
-         * Claim Command
-         */
-        Canary.logInfo(command[0]);
+
         if (command[0].equalsIgnoreCase("/town") || command[0].equalsIgnoreCase("/t")) {
             if (command.length > 1 && commands.containsKey(command[1])) {
+                if (commands.get(command[1]).canUseCommand(hook.getPlayer())) {
+                    return;
+                }
                 commands.get(command[1]).execute(hook.getPlayer(), this.remove(command, 2));
                 hook.setCanceled();
             }
         }
         else if(commands.containsKey(command[0])) {
-            Canary.logInfo(command[0]);
-            Canary.logInfo(String.valueOf(remove(command, 1).length));
-//            commands.get(command[0]).execute(hook.getPlayer(), this.remove(command, 1));
+            if (commands.get(command[0]).canUseCommand(hook.getPlayer())) {
+                return;
+            }
             commands.get(command[0]).execute(hook.getPlayer(), new String[0]);
             hook.setCanceled();
         }
-
     }
 
+    /**
+     * remove the *num* elements from the front of this String Array.
+     * @param command
+     * @param num
+     * @return
+     */
     public String[] remove(String[] command, int num) {
-        if (num == command.length) {
-            return new String[0];
-        }
-        return Arrays.copyOfRange(command, num, command.length);
-//        String[] toRet = new String[(command.length - num)];
-//        for (int i = num; i < command.length; i++) {
-//            toRet[(i - num)] = command[i];
+//        if (num == command.length) {
+//            return new String[0];
 //        }
-//        return toRet;
+        return Arrays.copyOfRange(command, num, command.length);
     }
 
+    /**
+     * Init the command classes. Should only be used internally.
+     */
     public void init() {
         ClaimCommand claim = new ClaimCommand();
         commands.put(claim.getBase(), claim);
-//        Canary.help().registerCommand(FiveStarTowns.get(), claim.getUsage(), claim.getDescription());
         UnclaimCommand unclaim = new UnclaimCommand();
         commands.put(unclaim.getBase(), unclaim);
         CreateCommand create = new CreateCommand();

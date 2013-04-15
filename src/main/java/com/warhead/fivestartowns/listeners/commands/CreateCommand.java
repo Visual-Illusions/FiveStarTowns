@@ -7,8 +7,8 @@
 package com.warhead.fivestartowns.listeners.commands;
 
 import com.warhead.fivestartowns.Config;
-import com.warhead.fivestartowns.Town;
-import com.warhead.fivestartowns.TownManager;
+import com.warhead.fivestartowns.town.Town;
+import com.warhead.fivestartowns.town.TownManager;
 import com.warhead.fivestartowns.database.TownAccess;
 import com.warhead.fivestartowns.database.TownPlayerAccess;
 import java.util.ArrayList;
@@ -22,12 +22,6 @@ import net.canarymod.chat.Colors;
 public class CreateCommand implements FSTCommand {
 
     public void execute(Player player, String[] command) {
-        Town t = TownManager.get().getTownFromPlayer(player);
-        if (t != null) {
-            player.sendMessage(Config.get().getMessageHeader() + "You are already a part of " + Colors.GREEN
-                    + t.getName() + Colors.WHITE + "! Please leave this town before creating a new one!");
-            return;
-        }
         if (!(command.length >= 1)) {
             player.sendMessage(Config.get().getMessageHeader() + "Improper syntax. Please use:\n  "
                     + Colors.GREEN + this.getUsage());
@@ -49,7 +43,7 @@ public class CreateCommand implements FSTCommand {
         town.assistant = new ArrayList<String>();
         town.members = new ArrayList<String>();;
         town.balance = 0;
-        town.bonusChunks = 0;
+        town.bonusPlots = 0;
         town.creeperNerf = false;
         town.friendlyFire = true;
         town.nopvp = false;
@@ -76,6 +70,16 @@ public class CreateCommand implements FSTCommand {
 
     public String getDescription() {
         return "Creates a Town witht he given name.";
+    }
+
+    public boolean canUseCommand(Player player) {
+        Town t = TownManager.get().getTownFromPlayer(player);
+        if (t != null) {
+            player.sendMessage(Config.get().getMessageHeader() + "You are already a part of " + Colors.GREEN
+                    + t.getName() + Colors.WHITE + "! Please leave this town before creating a new one!");
+            return false;
+        }
+        return true;
     }
 
 }

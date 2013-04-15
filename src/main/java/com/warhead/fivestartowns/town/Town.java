@@ -4,8 +4,10 @@
  * developers is in violation of our license which has been provided
  * for you in the source and compiled jar.
  */
-package com.warhead.fivestartowns;
+package com.warhead.fivestartowns.town;
 
+import com.warhead.fivestartowns.Config;
+import com.warhead.fivestartowns.plot.PlotManager;
 import com.warhead.fivestartowns.database.TownAccess;
 import java.util.List;
 import net.canarymod.Canary;
@@ -148,37 +150,37 @@ public class Town {
     }
 
     /**
-     * Get the amount of Bonus Chunks Awarded to this town.
+     * Get the amount of Bonus Plots Awarded to this town.
      * @return
      */
     public int getBonus() {
-        return data.bonusChunks;
+        return data.bonusPlots;
     }
 
     /**
-     * Set the amount of Bonus Chunks awarded to this town.
+     * Set the amount of Bonus Plots awarded to this town.
      * @param num
      */
     public void setBonus(int num) {
-        data.bonusChunks = num;
+        data.bonusPlots = num;
         try {
-            Database.get().update(data, new String[]{"bonusChunks"}, new Object[]{data.bonusChunks});
+            Database.get().update(data, new String[]{"bonusPlots"}, new Object[]{data.bonusPlots});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating Bonus Chunks in '" + this.getName() + "'. ", ex);
+            Canary.logStackTrace("Error updating Bonus Plots in '" + this.getName() + "'. ", ex);
         }
 
     }
 
     /**
-     * Add some bonus Chunks to this town.
+     * Add some bonus Plots to this town.
      * @param toAdd
      */
     public void addBonus(int toAdd) {
-        data.bonusChunks += toAdd;
+        data.bonusPlots += toAdd;
         try {
-            Database.get().update(data, new String[]{"bonusChunks"}, new Object[]{data.bonusChunks});
+            Database.get().update(data, new String[]{"bonusPlots"}, new Object[]{data.bonusPlots});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating Bonus Chunks in '" + this.getName() + "'. ", ex);
+            Canary.logStackTrace("Error updating Bonus Plots in '" + this.getName() + "'. ", ex);
         }
     }
 
@@ -266,7 +268,7 @@ public class Town {
     }
 
     /**
-     * Sets whether or not pvp is disabled globally. Per chunk settings
+     * Sets whether or not pvp is disabled globally. Per plot settings
      * override this.
      * @param toSet true - no pvp allowed<br>false - pvp allowed here
      */
@@ -280,7 +282,7 @@ public class Town {
     }
 
     /**
-     * Sets whether or not protection is enabled globally. Per chunk settings
+     * Sets whether or not protection is enabled globally. Per plot settings
      * override this.
      * @param toSet true - protections on<br>false - protections off.
      */
@@ -294,7 +296,7 @@ public class Town {
     }
 
     /**
-     * Sets whether or not sanctuary is enabled globally. Per chunk settings
+     * Sets whether or not sanctuary is enabled globally. Per plot settings
      * override this.
      * @param toSet true - sanctuary on<br>false - sanctuary off
      */
@@ -308,7 +310,7 @@ public class Town {
     }
 
     /**
-     * Sets whether or not creepers are disabled globally. Per chunk settings
+     * Sets whether or not creepers are disabled globally. Per plot settings
      * override this.
      * @param toSet true - no creepin' allowed<br>false - creepin' allowed here
      */
@@ -322,7 +324,7 @@ public class Town {
     }
 
     /**
-     * Sets whether or not friendly fire is enabled globally. Per chunk settings
+     * Sets whether or not friendly fire is enabled globally. Per plot settings
      * override this.
      * @param toSet true - frienldy fire allowed<br>false - friendly fire not allowed here
      */
@@ -428,20 +430,20 @@ public class Town {
     }
 
     /**
-     * The most chunks that this town can claim
+     * The most plots that this town can claim
      *
      * @return
      */
     public int getMaxClaimCount() {
-        return this.getMemberSize() * Config.get().getChunksPerPlayer();
+        return this.getMemberSize() * Config.get().getPlotsPerPlayer();
     }
 
     /**
-     * The current amount of chunks that this town has claimed.
+     * The current amount of plots that this town has claimed.
      *
      * @return
      */
     public int getCurrentClaimCount() {
-        return ChunkManager.get().getTownChunks(this.getName()).length;
+        return PlotManager.get().getTownPlots(this.getName()).length;
     }
 }

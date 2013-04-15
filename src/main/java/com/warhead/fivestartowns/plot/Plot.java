@@ -4,9 +4,12 @@
  * developers is in violation of our license which has been provided
  * for you in the source and compiled jar.
  */
-package com.warhead.fivestartowns;
+package com.warhead.fivestartowns.plot;
 
-import com.warhead.fivestartowns.database.ChunkAccess;
+import com.warhead.fivestartowns.town.TownPlayer;
+import com.warhead.fivestartowns.town.TownManager;
+import com.warhead.fivestartowns.town.Town;
+import com.warhead.fivestartowns.database.PlotAccess;
 import net.canarymod.Canary;
 import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseWriteException;
@@ -15,16 +18,16 @@ import net.canarymod.database.exceptions.DatabaseWriteException;
  *
  * @author Somners
  */
-public class FSTChunk {
+public class Plot {
 
-    private final ChunkAccess data;
+    private final PlotAccess data;
 
-    public FSTChunk(ChunkAccess access) {
+    public Plot(PlotAccess access) {
         this.data = access;
     }
 
     /**
-     * Get the X coordinate for this chunk.
+     * Get the X coordinate for this plot.
      * @return
      */
     public int getX() {
@@ -32,7 +35,7 @@ public class FSTChunk {
     }
 
     /**
-     * Get the Z coordinate for this chunk.
+     * Get the Z coordinate for this plot.
      * @return
      */
     public int getZ() {
@@ -40,7 +43,7 @@ public class FSTChunk {
     }
 
     /**
-     * Get the world Name of this chunk.
+     * Get the world Name of this plot.
      * @return
      */
     public String getWorldName() {
@@ -48,7 +51,7 @@ public class FSTChunk {
     }
 
     /**
-     * Name of the town that owns this chunk.
+     * Name of the town that owns this plot.
      * @return
      */
     public String getTownName() {
@@ -56,7 +59,7 @@ public class FSTChunk {
     }
 
     /**
-     * Instance of the town that owns this chunk.
+     * Instance of the town that owns this plot.
      * @return
      */
     public Town getTown() {
@@ -90,7 +93,7 @@ public class FSTChunk {
     }
 
     /**
-     * Sets whether or not pvp is disabled globally. Per chunk settings
+     * Sets whether or not pvp is disabled globally. Per plot settings
      * override this.
      * @param toSet true - no pvp allowed<br>false - pvp allowed here
      */
@@ -99,13 +102,13 @@ public class FSTChunk {
         try {
             Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.nopvp});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating 'nopvp' in Chunk '"
+            Canary.logStackTrace("Error updating 'nopvp' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
         }
     }
 
     /**
-     * Sets whether or not protection is enabled globally. Per chunk settings
+     * Sets whether or not protection is enabled globally. Per plot settings
      * override this.
      * @param toSet true - protections on<br>false - protections off.
      */
@@ -114,13 +117,13 @@ public class FSTChunk {
         try {
             Database.get().update(data, new String[]{"protection"}, new Object[]{data.protection});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating 'protection' in Chunk '"
+            Canary.logStackTrace("Error updating 'protection' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
         }
     }
 
     /**
-     * Sets whether or not sanctuary is enabled globally. Per chunk settings
+     * Sets whether or not sanctuary is enabled globally. Per plot settings
      * override this.
      * @param toSet true - sanctuary on<br>false - sanctuary off
      */
@@ -129,13 +132,13 @@ public class FSTChunk {
         try {
             Database.get().update(data, new String[]{"sanctuary"}, new Object[]{data.sanctuary});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating 'sanctuary' in Chunk '"
+            Canary.logStackTrace("Error updating 'sanctuary' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
         }
     }
 
     /**
-     * Sets whether or not creepers are disabled globally. Per chunk settings
+     * Sets whether or not creepers are disabled globally. Per plot settings
      * override this.
      * @param toSet true - no creepin' allowed<br>false - creepin' allowed here
      */
@@ -144,13 +147,13 @@ public class FSTChunk {
         try {
             Database.get().update(data, new String[]{"creeperNerf"}, new Object[]{data.creeperNerf});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating 'creeperNerf' in Chunk '"
+            Canary.logStackTrace("Error updating 'creeperNerf' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
         }
     }
 
     /**
-     * Sets whether or not friendly fire is enabled globally. Per chunk settings
+     * Sets whether or not friendly fire is enabled globally. Per plot settings
      * override this.
      * @param toSet true - frienldy fire allowed<br>false - friendly fire not allowed here
      */
@@ -159,7 +162,7 @@ public class FSTChunk {
         try {
             Database.get().update(data, new String[]{"friendlyFire"}, new Object[]{data.friendlyFire});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating 'friendlyFire' in Chunk '"
+            Canary.logStackTrace("Error updating 'friendlyFire' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
         }
     }
@@ -204,7 +207,7 @@ public class FSTChunk {
         return data.friendlyFire;
     }
 
-    public boolean isChunkEqual(int x, int z, String world) {
+    public boolean isPlotEqual(int x, int z, String world) {
         if (data.x != x) {
             return false;
         } else if (data.z != z) {
@@ -215,12 +218,14 @@ public class FSTChunk {
         return true;
     }
 
-    public boolean equals(FSTChunk chunk) {
-        if(chunk == null) {
+    public boolean equals(Plot plot) {
+        if(plot == null) {
             return false;
         }
-        return chunk.getTownName().equals(this.getTownName());
+        return plot.getTownName().equals(this.getTownName());
     }
 
-
+    public PlotAccess getAccess() {
+        return data;
+    }
 }

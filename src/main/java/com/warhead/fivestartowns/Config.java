@@ -21,7 +21,7 @@ public class Config {
     private static Config instance = null;
     private PropertiesFile config;
     private String server;
-    private int chunkMultiplier;
+    private int plotMultiplier;
 
     public Config() {
         File file = new File("plugins/config/FiveStarTowns/FiveStarTowns.properties");
@@ -46,7 +46,7 @@ public class Config {
 
     public void load() {
         server = config.getString("server-name", "FiveStarTowns");
-        chunkMultiplier = config.getInt("chunk-multiplier-per-player", 4);
+        plotMultiplier = config.getInt("plot-multiplier-per-player", 4);
         config.save();
 
     }
@@ -54,7 +54,7 @@ public class Config {
     public void comment() {
         config.addComment("server-name", "This will be in the header for messages sent to players");
         config.addComment("server-name", "By default it will be: '[FiveStarTowns]'");
-        config.addComment("chunk-multiplier-per-player", "How many chunks does a town get for every player?");
+        config.addComment("plot-multiplier-per-player", "How many plots does a town get for every player?");
     }
 
     public String getServerName() {
@@ -65,8 +65,8 @@ public class Config {
         return Colors.BLACK + "[" + Colors.ORANGE + this.server + Colors.BLACK + "] " + Colors.WHITE;
     }
 
-    public int getChunksPerPlayer() {
-        return this.chunkMultiplier;
+    public int getPlotsPerPlayer() {
+        return this.plotMultiplier;
     }
 
 }

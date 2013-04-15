@@ -6,9 +6,9 @@
  */
 package com.warhead.fivestartowns.listeners;
 
-import com.warhead.fivestartowns.ChunkManager;
+import com.warhead.fivestartowns.plot.PlotManager;
 import com.warhead.fivestartowns.Config;
-import com.warhead.fivestartowns.FSTChunk;
+import com.warhead.fivestartowns.plot.Plot;
 import net.canarymod.chat.Colors;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.player.PlayerMoveHook;
@@ -24,23 +24,23 @@ public class FiveStarTownsListener implements PluginListener {
     public void onPlayerMove(PlayerMoveHook hook) {
         String to = "The Wilderness";
         String from = "The Wilderness";
-        FSTChunk toChunk = ChunkManager.get().getFSTChunk(hook.getTo());
-        FSTChunk fromChunk = ChunkManager.get().getFSTChunk(hook.getFrom());
-        if (toChunk != null) {
-            to = toChunk.getTownName();
+        Plot toPlot = PlotManager.get().getFSTPlot(hook.getTo());
+        Plot fromPlot = PlotManager.get().getFSTPlot(hook.getFrom());
+        if (toPlot != null) {
+            to = toPlot.getTownName();
         }
-        if (fromChunk != null) {
-            from = fromChunk.getTownName();
+        if (fromPlot != null) {
+            from = fromPlot.getTownName();
         }
         if (!from.equalsIgnoreCase(to)) {
             hook.getPlayer().sendMessage(Config.get().getMessageHeader() + "You are leaving "
                     + Colors.GREEN + from + Colors.WHITE + " and entering "
                     + Colors.GREEN + to);
-            if (fromChunk != null) {
-                hook.getPlayer().sendMessage(Colors.BLACK + " | " + Colors.WHITE + fromChunk.getTown().getFarewell());
+            if (fromPlot != null) {
+                hook.getPlayer().sendMessage(Colors.BLACK + " | " + Colors.WHITE + fromPlot.getTown().getFarewell());
             }
-            if (toChunk != null) {
-                hook.getPlayer().sendMessage(Colors.BLACK + " | " + Colors.WHITE + toChunk.getTown().getWelcome());
+            if (toPlot != null) {
+                hook.getPlayer().sendMessage(Colors.BLACK + " | " + Colors.WHITE + toPlot.getTown().getWelcome());
             }
         }
     }
