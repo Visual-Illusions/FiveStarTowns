@@ -37,6 +37,20 @@
     </repositories>
     
     <build>
+        <pluginManagement>
+    <plugins>
+    <plugin>
+      <groupId>org.sonatype.plugins</groupId>
+      <artifactId>nexus-staging-maven-plugin</artifactId>
+      <version>1.2</version>
+      <extensions>true</extensions>
+      <configuration>
+        <serverId>nexus</serverId>
+        <nexusUrl>http://nexus.somners.net</nexusUrl>
+      </configuration>
+      </plugin>
+    </plugins>
+        </pluginManagement>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources/</directory>
