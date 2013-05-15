@@ -6,10 +6,19 @@
  */
 package com.warhead.fivestartowns.plot;
 
+import com.warhead.fivestartowns.FlagType;
+import static com.warhead.fivestartowns.FlagType.CREEPER_NERF;
+import static com.warhead.fivestartowns.FlagType.FRIENDLY_FIRE;
+import static com.warhead.fivestartowns.FlagType.NO_PVP;
+import static com.warhead.fivestartowns.FlagType.OWNER_PLOT;
+import static com.warhead.fivestartowns.FlagType.PROTECTION;
+import static com.warhead.fivestartowns.FlagType.SANCTUARY;
 import com.warhead.fivestartowns.town.TownPlayer;
 import com.warhead.fivestartowns.town.TownManager;
 import com.warhead.fivestartowns.town.Town;
 import com.warhead.fivestartowns.database.PlotAccess;
+import java.util.ArrayList;
+import java.util.List;
 import net.canarymod.Canary;
 import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseWriteException;
@@ -81,26 +90,93 @@ public class Plot {
     public TownPlayer getPlotOwner() {
         return TownManager.get().getTownPlayer(data.owner);
     }
-
-
+        
     /**
-     *
-     * @param flag
-     * @return
+     * Toggles this flagtype and returns what the FlagType was set to.
+     * @param type
+     * @return 
      */
-    public boolean canUseFlag(String flag) {
-        return false;// TODO
+    public boolean toggleFlag(FlagType type) {
+        switch(type) {
+            case NO_PVP:
+                this.setNoPvp(!data.nopvp);
+                return data.nopvp;
+            case FRIENDLY_FIRE:
+                this.setFriendlyFire(!data.friendlyFire);
+                return data.friendlyFire;
+            case SANCTUARY:
+                this.setSanctuary(!data.sanctuary);
+                return data.sanctuary;
+            case PROTECTION:
+                this.setProtected(!data.protection);
+                return data.protection;
+            case CREEPER_NERF:
+                this.setCreeperNerf(!data.creeperNerf);
+                return data.creeperNerf;
+            case OWNER_PLOT:
+                this.setOwnerPlot(!data.ownerPlot);
+                return data.ownerPlot;
+        }
+        return false;
+    }
+    
+    public void toggleFlag(FlagType type, boolean flag) {
+        switch(type) {
+            case NO_PVP:
+                this.setNoPvp(flag);
+            case FRIENDLY_FIRE:
+                this.setFriendlyFire(flag);
+            case SANCTUARY:
+                this.setSanctuary(flag);
+            case PROTECTION:
+                this.setProtected(flag);
+            case CREEPER_NERF:
+                this.setCreeperNerf(flag);
+            case OWNER_PLOT:
+                this.setOwnerPlot(flag);
+        }
+    }
+    
+    public boolean getFlagValue(FlagType type) {
+        switch(type) {
+            case NO_PVP:
+                return data.nopvp;
+            case FRIENDLY_FIRE:
+                return data.friendlyFire;
+            case SANCTUARY:
+                return data.sanctuary;
+            case PROTECTION:
+                return data.protection;
+            case CREEPER_NERF:
+                return data.creeperNerf;
+            case OWNER_PLOT:
+                return data.ownerPlot;
+        }
+        return false;
     }
 
     /**
-     * Sets whether or not pvp is disabled globally. Per plot settings
-     * override this.
+     * Sets whether or not pvp is disabled. 
      * @param toSet true - no pvp allowed<br>false - pvp allowed here
      */
     public void setNoPvp(boolean value) {
         data.nopvp = value;
         try {
-            Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.nopvp});
+            Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.ownerPlot});
+        } catch (DatabaseWriteException ex) {
+            Canary.logStackTrace("Error updating 'ownerPlot' in Plot '"
+                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
+        }
+    }
+    
+    /**
+     * Sets whether or not this is an owner plot. 
+     * @param toSet true - it is an owner plot<br>false - not an owner plot
+     */
+    public void setOwnerPlot(boolean value) {
+        data.nopvp = value;
+        try {
+            Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.ownerPlot});
         } catch (DatabaseWriteException ex) {
             Canary.logStackTrace("Error updating 'nopvp' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
@@ -108,8 +184,7 @@ public class Plot {
     }
 
     /**
-     * Sets whether or not protection is enabled globally. Per plot settings
-     * override this.
+     * Sets whether or not protection is enabled 
      * @param toSet true - protections on<br>false - protections off.
      */
     public void setProtected(boolean value) {
@@ -123,9 +198,7 @@ public class Plot {
     }
 
     /**
-     * Sets whether or not sanctuary is enabled globally. Per plot settings
-     * override this.
-     * @param toSet true - sanctuary on<br>false - sanctuary off
+     * Sets whether or not sanctuary is enabledfalse - sanctuary off
      */
     public void setSanctuary(boolean value) {
         data.sanctuary = value;
@@ -138,8 +211,7 @@ public class Plot {
     }
 
     /**
-     * Sets whether or not creepers are disabled globally. Per plot settings
-     * override this.
+     * Sets whether or not creepers are disabled 
      * @param toSet true - no creepin' allowed<br>false - creepin' allowed here
      */
     public void setCreeperNerf(boolean value) {
@@ -153,8 +225,7 @@ public class Plot {
     }
 
     /**
-     * Sets whether or not friendly fire is enabled globally. Per plot settings
-     * override this.
+     * Sets whether or not friendly fire is enabled 
      * @param toSet true - frienldy fire allowed<br>false - friendly fire not allowed here
      */
     public void setFriendlyFire(boolean value) {

@@ -49,6 +49,9 @@ public class PlotAccess extends DataAccess {
     @Column(columnName = "owner", dataType = Column.DataType.STRING)
     public String owner;
 
+    @Column(columnName = "ownerPlot", dataType = Column.DataType.BOOLEAN)
+    public boolean ownerPlot;
+    
     @Column(columnName = "nopvp", dataType = Column.DataType.BOOLEAN)
     public boolean nopvp;
 

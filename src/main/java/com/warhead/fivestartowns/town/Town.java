@@ -7,8 +7,16 @@
 package com.warhead.fivestartowns.town;
 
 import com.warhead.fivestartowns.Config;
+import com.warhead.fivestartowns.FlagType;
+import static com.warhead.fivestartowns.FlagType.CREEPER_NERF;
+import static com.warhead.fivestartowns.FlagType.FRIENDLY_FIRE;
+import static com.warhead.fivestartowns.FlagType.NO_PVP;
+import static com.warhead.fivestartowns.FlagType.OWNER_PLOT;
+import static com.warhead.fivestartowns.FlagType.PROTECTION;
+import static com.warhead.fivestartowns.FlagType.SANCTUARY;
 import com.warhead.fivestartowns.plot.PlotManager;
 import com.warhead.fivestartowns.database.TownAccess;
+import java.util.ArrayList;
 import java.util.List;
 import net.canarymod.Canary;
 import net.canarymod.database.Database;
@@ -265,6 +273,81 @@ public class Town {
      */
     public boolean canUseFlag(String flag) {
         return false;// TODO
+    }
+    
+    /**
+     * Gets a list of flags that can be set.
+     * @return 
+     */
+    public List<FlagType> getFlags() {
+        return new ArrayList<FlagType>();
+    }
+    
+    /**
+     * Gets a list of flags that can be set.
+     * @return 
+     */
+    public List<String> getFlagNames() {
+        return new ArrayList<String>();
+    }
+    
+    /**
+     * Toggles this flagtype and returns what the FlagType was set to.
+     * @param type
+     * @return 
+     */
+    public boolean toggleFlag(FlagType type) {
+        switch(type) {
+            case NO_PVP:
+                this.setNoPvp(!data.nopvp);
+                return data.nopvp;
+            case FRIENDLY_FIRE:
+                this.setFriendlyFire(!data.friendlyFire);
+                return data.friendlyFire;
+            case SANCTUARY:
+                this.setSanctuary(!data.sanctuary);
+                return data.sanctuary;
+            case PROTECTION:
+                this.setProtected(!data.protection);
+                return data.protection;
+            case CREEPER_NERF:
+                this.setCreeperNerf(!data.creeperNerf);
+                return data.creeperNerf;
+                
+        }
+        return false;
+    }
+    
+    public void toggleFlag(FlagType type, boolean flag) {
+        switch(type) {
+            case NO_PVP:
+                this.setNoPvp(flag);
+            case FRIENDLY_FIRE:
+                this.setFriendlyFire(flag);
+            case SANCTUARY:
+                this.setSanctuary(flag);
+            case PROTECTION:
+                this.setProtected(flag);
+            case CREEPER_NERF:
+                this.setCreeperNerf(flag);
+                
+        }
+    }
+    
+    public boolean getFlagValue(FlagType type) {
+        switch(type) {
+            case NO_PVP:
+                return data.nopvp;
+            case FRIENDLY_FIRE:
+                return data.friendlyFire;
+            case SANCTUARY:
+                return data.sanctuary;
+            case PROTECTION:
+                return data.protection;
+            case CREEPER_NERF:
+                return data.creeperNerf;
+        }
+        return false;
     }
 
     /**

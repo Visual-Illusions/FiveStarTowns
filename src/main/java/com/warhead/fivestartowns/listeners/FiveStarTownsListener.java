@@ -9,8 +9,12 @@ package com.warhead.fivestartowns.listeners;
 import com.warhead.fivestartowns.plot.PlotManager;
 import com.warhead.fivestartowns.Config;
 import com.warhead.fivestartowns.plot.Plot;
+import com.warhead.fivestartowns.town.TownManager;
+import com.warhead.fivestartowns.town.TownPlayer;
+import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.chat.Colors;
 import net.canarymod.hook.HookHandler;
+import net.canarymod.hook.entity.DamageHook;
 import net.canarymod.hook.player.PlayerMoveHook;
 import net.canarymod.plugin.PluginListener;
 
@@ -41,6 +45,31 @@ public class FiveStarTownsListener implements PluginListener {
             }
             if (toPlot != null) {
                 hook.getPlayer().sendMessage(Colors.BLACK + " | " + Colors.WHITE + toPlot.getTown().getWelcome());
+            }
+        }
+    }
+    
+    @HookHandler
+    public void onPlayerAttacked(DamageHook hook) {
+        /*
+         * PvP Check & Friendly Fire Check
+         */
+        if (hook.getAttacker() instanceof Player && hook.getDefender() instanceof Player) {
+            Player attacker = (Player)hook.getAttacker();
+            Player defender = (Player)hook.getDefender();
+            Plot a = PlotManager.get().getFSTPlot(attacker);
+            Plot d = PlotManager.get().getFSTPlot(defender);
+            if ((a != null && a.getNoPvp()) || (d != null && d.getNoPvp())) {
+                hook.setCanceled();
+                return;
+            }
+            TownPlayer tpa = TownManager.get().getTownPlayer(attacker);
+            TownPlayer tpd = TownManager.get().getTownPlayer(defender);
+            if ((tpa != null && tpd != null) && tpa.getTownName().equals(tpd.getTownName())) {
+                if ((a != null && !a.getFriendlyFire()) || (d != null && !d.getFriendlyFire())) {
+                    hook.setCanceled();
+                    return;
+                }
             }
         }
     }

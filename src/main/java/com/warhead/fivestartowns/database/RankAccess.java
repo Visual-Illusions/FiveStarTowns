@@ -6,6 +6,7 @@
  */
 package com.warhead.fivestartowns.database;
 
+import java.util.List;
 import net.canarymod.database.Column;
 import net.canarymod.database.DataAccess;
 
@@ -28,8 +29,8 @@ public class RankAccess extends DataAccess {
     /**
      * Population needed for this Rank
      */
-    @Column(columnName = "population", dataType = Column.DataType.INTEGER)
-    public int population;
+    @Column(columnName = "populationReq", dataType = Column.DataType.INTEGER)
+    public int populationReq;
 
     /**
      * Type of this town. Currently unused.
@@ -39,13 +40,22 @@ public class RankAccess extends DataAccess {
 
     @Column(columnName = "mayorPrefix", dataType = Column.DataType.STRING)
     public String mayorPrefix;
+    
+    @Column(columnName = "mayorPrefix", dataType = Column.DataType.STRING)
+    public String mayorSuffix;
 
     @Column(columnName = "assistantPrefix", dataType = Column.DataType.STRING)
     public String assistantPrefix;
-    
-    @Column(columnName = "townNickname", dataType = Column.DataType.STRING)
-    public String townNickname;
 
+    @Column(columnName = "assistantPrefix", dataType = Column.DataType.STRING)
+    public String assistantSuffix;
+    
+    @Column(columnName = "townPrefix", dataType = Column.DataType.STRING)
+    public String townPrefix;
+
+    @Column(columnName = "townSuffix", dataType = Column.DataType.STRING)
+    public String townSuffix;
+    
     @Column(columnName = "flags", dataType = Column.DataType.STRING, isList = true)
-    public String flags;
+    public List<String> flags;
 }
