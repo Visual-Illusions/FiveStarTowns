@@ -47,4 +47,11 @@
         </resources>
         <sourceDirectory>${project.basedir}/src/main/java/</sourceDirectory>
     </build>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>Somners</id>
+            <url>http://69.160.42.216:8081/nexus/content/repositories/Somners/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
