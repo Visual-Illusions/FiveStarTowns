@@ -74,7 +74,7 @@
     
     <distributionManagement>
         <snapshotRepository>
-            <id>Somners</id>
+            <id>nexus</id>
             <url>http://nexus.somners.net/content/repositories/Somners</url>
         </snapshotRepository>
     </distributionManagement>
