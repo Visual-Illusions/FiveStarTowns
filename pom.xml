@@ -27,7 +27,15 @@
             <version>0.8-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
+    
+    <repositories>
+        <repository>
+            <id>vi-repo</id>
+            <name>Visual Illusions Repository</name>
+            <url>http://repo.visualillusionsent.net</url>
+        </repository>
+    </repositories>
+    
     <build>
         <resources>
             <resource>
