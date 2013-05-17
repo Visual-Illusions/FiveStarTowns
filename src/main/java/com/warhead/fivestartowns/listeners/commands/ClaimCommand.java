@@ -49,11 +49,12 @@ public class ClaimCommand implements FSTCommand {
         data.x = ((int)loc.getX()) >> 4;
         data.z = ((int)loc.getZ()) >> 4;
         data.world = loc.getWorldName();
-        data.creeperNerf = town.getCreeperNerf();
-        data.friendlyFire = town.getFriendlyFire();
-        data.nopvp = town.getNoPvp();
-        data.protection = town.getProtected();
-        data.sanctuary = town.getSanctuary();
+        data.creeperNerf = "NULL";
+        data.friendlyFire = "NULL";
+        data.nopvp = "NULL";
+        data.protection = "NULL";
+        data.sanctuary = "NULL";
+        data.ownerPlot = "NULL";
         data.town = town.getName();
         data.owner = "";
         PlotManager.get().addPlot(data);

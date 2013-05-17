@@ -13,6 +13,7 @@ import static com.warhead.fivestartowns.FlagType.NO_PVP;
 import static com.warhead.fivestartowns.FlagType.OWNER_PLOT;
 import static com.warhead.fivestartowns.FlagType.PROTECTION;
 import static com.warhead.fivestartowns.FlagType.SANCTUARY;
+import com.warhead.fivestartowns.FlagValue;
 import com.warhead.fivestartowns.town.TownPlayer;
 import com.warhead.fivestartowns.town.TownManager;
 import com.warhead.fivestartowns.town.Town;
@@ -92,75 +93,52 @@ public class Plot {
     }
         
     /**
-     * Toggles this flagtype and returns what the FlagType was set to.
+     * Sets this flagtype and returns what the FlagType was set to.
      * @param type
      * @return 
      */
-    public boolean toggleFlag(FlagType type) {
+    public FlagValue setFlag(FlagType type, FlagValue value) {
         switch(type) {
             case NO_PVP:
-                this.setNoPvp(!data.nopvp);
-                return data.nopvp;
+                this.setNoPvp(value);
             case FRIENDLY_FIRE:
-                this.setFriendlyFire(!data.friendlyFire);
-                return data.friendlyFire;
+                this.setFriendlyFire(value);
             case SANCTUARY:
-                this.setSanctuary(!data.sanctuary);
-                return data.sanctuary;
+                this.setSanctuary(value);
             case PROTECTION:
-                this.setProtected(!data.protection);
-                return data.protection;
+                this.setProtected(value);
             case CREEPER_NERF:
-                this.setCreeperNerf(!data.creeperNerf);
-                return data.creeperNerf;
+                this.setCreeperNerf(value);
             case OWNER_PLOT:
-                this.setOwnerPlot(!data.ownerPlot);
-                return data.ownerPlot;
+                this.setOwnerPlot(value);
         }
-        return false;
+        return null;
     }
-    
-    public void toggleFlag(FlagType type, boolean flag) {
+
+    public FlagValue getFlagValue(FlagType type) {
         switch(type) {
             case NO_PVP:
-                this.setNoPvp(flag);
+                return FlagValue.getType(data.nopvp);
             case FRIENDLY_FIRE:
-                this.setFriendlyFire(flag);
+                return FlagValue.getType(data.friendlyFire);
             case SANCTUARY:
-                this.setSanctuary(flag);
+                return FlagValue.getType(data.sanctuary);
             case PROTECTION:
-                this.setProtected(flag);
+                return FlagValue.getType(data.protection);
             case CREEPER_NERF:
-                this.setCreeperNerf(flag);
+                return FlagValue.getType(data.creeperNerf);
             case OWNER_PLOT:
-                this.setOwnerPlot(flag);
+                return FlagValue.getType(data.ownerPlot);
         }
-    }
-    
-    public boolean getFlagValue(FlagType type) {
-        switch(type) {
-            case NO_PVP:
-                return data.nopvp;
-            case FRIENDLY_FIRE:
-                return data.friendlyFire;
-            case SANCTUARY:
-                return data.sanctuary;
-            case PROTECTION:
-                return data.protection;
-            case CREEPER_NERF:
-                return data.creeperNerf;
-            case OWNER_PLOT:
-                return data.ownerPlot;
-        }
-        return false;
+        return null;
     }
 
     /**
      * Sets whether or not pvp is disabled. 
-     * @param toSet true - no pvp allowed<br>false - pvp allowed here
+     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
-    public void setNoPvp(boolean value) {
-        data.nopvp = value;
+    public void setNoPvp(FlagValue value) {
+        data.nopvp = value.toString();
         try {
             Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.ownerPlot});
         } catch (DatabaseWriteException ex) {
@@ -171,24 +149,24 @@ public class Plot {
     
     /**
      * Sets whether or not this is an owner plot. 
-     * @param toSet true - it is an owner plot<br>false - not an owner plot
+     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
-    public void setOwnerPlot(boolean value) {
-        data.nopvp = value;
+    public void setOwnerPlot(FlagValue value) {
+        data.ownerPlot = value.toString();
         try {
-            Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.ownerPlot});
+            Database.get().update(data, new String[]{"ownerPlot"}, new Object[]{data.ownerPlot});
         } catch (DatabaseWriteException ex) {
-            Canary.logStackTrace("Error updating 'nopvp' in Plot '"
+            Canary.logStackTrace("Error updating 'ownerPlot' in Plot '"
                     + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
         }
     }
 
     /**
      * Sets whether or not protection is enabled 
-     * @param toSet true - protections on<br>false - protections off.
+     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
-    public void setProtected(boolean value) {
-        data.protection = value;
+    public void setProtected(FlagValue value) {
+        data.protection = value.toString();
         try {
             Database.get().update(data, new String[]{"protection"}, new Object[]{data.protection});
         } catch (DatabaseWriteException ex) {
@@ -199,9 +177,10 @@ public class Plot {
 
     /**
      * Sets whether or not sanctuary is enabledfalse - sanctuary off
+     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
-    public void setSanctuary(boolean value) {
-        data.sanctuary = value;
+    public void setSanctuary(FlagValue value) {
+        data.sanctuary = value.toString();
         try {
             Database.get().update(data, new String[]{"sanctuary"}, new Object[]{data.sanctuary});
         } catch (DatabaseWriteException ex) {
@@ -212,10 +191,10 @@ public class Plot {
 
     /**
      * Sets whether or not creepers are disabled 
-     * @param toSet true - no creepin' allowed<br>false - creepin' allowed here
+     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
-    public void setCreeperNerf(boolean value) {
-        data.creeperNerf = value;
+    public void setCreeperNerf(FlagValue value) {
+        data.creeperNerf = value.toString();
         try {
             Database.get().update(data, new String[]{"creeperNerf"}, new Object[]{data.creeperNerf});
         } catch (DatabaseWriteException ex) {
@@ -226,10 +205,10 @@ public class Plot {
 
     /**
      * Sets whether or not friendly fire is enabled 
-     * @param toSet true - frienldy fire allowed<br>false - friendly fire not allowed here
+     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
-    public void setFriendlyFire(boolean value) {
-        data.friendlyFire = value;
+    public void setFriendlyFire(FlagValue value) {
+        data.friendlyFire = value.toString();
         try {
             Database.get().update(data, new String[]{"friendlyFire"}, new Object[]{data.friendlyFire});
         } catch (DatabaseWriteException ex) {
@@ -243,7 +222,10 @@ public class Plot {
      * @return true - pvp disabled<br>false - pvp enabled
      */
     public boolean getNoPvp() {
-        return data.nopvp;
+        if (data.nopvp.equals(FlagValue.NULL.toString())) {
+            return this.getTown().getNoPvp();
+        }
+        return FlagValue.getType(data.nopvp).getBoolean();
     }
 
     /**
@@ -251,7 +233,10 @@ public class Plot {
      * @return true - enabled<br>false - disabled
      */
     public boolean getProtected() {
-        return data.protection;
+        if (data.protection.equals(FlagValue.NULL.toString())) {
+            return this.getTown().getProtected();
+        }
+        return FlagValue.getType(data.protection).getBoolean();
     }
 
     /**
@@ -259,7 +244,10 @@ public class Plot {
      * @return true - mob spawning blocked<br>false - mob spawning allowed
      */
     public boolean getSanctuary() {
-        return data.sanctuary;
+        if (data.sanctuary.equals(FlagValue.NULL.toString())) {
+            return this.getTown().getSanctuary();
+        }
+        return FlagValue.getType(data.sanctuary).getBoolean();
     }
 
     /**
@@ -267,7 +255,10 @@ public class Plot {
      * @return true - creepers disabled<br>false - creepers enabled
      */
     public boolean getCreeperNerf() {
-        return data.creeperNerf;
+        if (data.creeperNerf.equals(FlagValue.NULL.toString())) {
+            return this.getTown().getCreeperNerf();
+        }
+        return FlagValue.getType(data.creeperNerf).getBoolean();
     }
 
     /**
@@ -275,7 +266,10 @@ public class Plot {
      * @return true - FF enabled<br>false - FF disabled
      */
     public boolean getFriendlyFire() {
-        return data.friendlyFire;
+        if (data.friendlyFire.equals(FlagValue.NULL.toString())) {
+            return this.getTown().getFriendlyFire();
+        }
+        return FlagValue.getType(data.friendlyFire).getBoolean();
     }
 
     public boolean isPlotEqual(int x, int z, String world) {
