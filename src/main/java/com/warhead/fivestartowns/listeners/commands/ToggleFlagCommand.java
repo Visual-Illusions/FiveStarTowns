@@ -7,8 +7,8 @@
 package com.warhead.fivestartowns.listeners.commands;
 
 import com.warhead.fivestartowns.Config;
-import com.warhead.fivestartowns.FlagType;
-import com.warhead.fivestartowns.FlagValue;
+import com.warhead.fivestartowns.flag.FlagType;
+import com.warhead.fivestartowns.flag.FlagValue;
 import com.warhead.fivestartowns.plot.Plot;
 import com.warhead.fivestartowns.plot.PlotManager;
 import com.warhead.fivestartowns.town.Town;
@@ -72,7 +72,7 @@ public class ToggleFlagCommand implements FSTCommand {
             return;
         }
         else if (command[0].equalsIgnoreCase("global")) {
-            town.toggleFlag(type, value.getBoolean());
+            town.setFlag(type, value);
             player.sendMessage(Config.get().getMessageHeader() + "Flag " + Colors.GREEN +
                     type.getName() + Colors.WHITE + "has been toggled to " + Colors.GREEN +
                     String.valueOf(town.getFlagValue(type)));

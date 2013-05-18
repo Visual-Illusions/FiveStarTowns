@@ -44,11 +44,11 @@ public class CreateCommand implements FSTCommand {
         town.members = new ArrayList<String>();;
         town.balance = 0;
         town.bonusPlots = 0;
-        town.creeperNerf = false;
-        town.friendlyFire = true;
-        town.nopvp = false;
-        town.protection = false;
-        town.sanctuary = false;
+        town.creeperNerf = "FALSE";
+        town.friendlyFire = "FALSE";
+        town.nopvp = "FALSE";
+        town.protection = "FALSE";
+        town.sanctuary = "FALSE";
         town.welcome = "Welcome to " + newName + "!";
         town.farewell = "You are now leaving " + newName + "!";
         TownManager.get().addTown(town);

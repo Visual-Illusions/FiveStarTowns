@@ -4,7 +4,7 @@
  * developers is in violation of our license which has been provided
  * for you in the source and compiled jar.
  */
-package com.warhead.fivestartowns;
+package com.warhead.fivestartowns.flag;
 
 /**
  *

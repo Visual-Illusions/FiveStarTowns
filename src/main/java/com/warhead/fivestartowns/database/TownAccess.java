@@ -47,20 +47,20 @@ public class TownAccess extends DataAccess {
     @Column(columnName = "bonusPlots", dataType = Column.DataType.INTEGER)
     public int bonusPlots;
 
-    @Column(columnName = "nopvp", dataType = Column.DataType.BOOLEAN)
-    public boolean nopvp;
+    @Column(columnName = "nopvp", dataType = Column.DataType.STRING)
+    public String nopvp;
 
-    @Column(columnName = "friendlyFire", dataType = Column.DataType.BOOLEAN)
-    public boolean friendlyFire;
+    @Column(columnName = "friendlyFire", dataType = Column.DataType.STRING)
+    public String friendlyFire;
 
-    @Column(columnName = "sanctuary", dataType = Column.DataType.BOOLEAN)
-    public boolean sanctuary;
+    @Column(columnName = "sanctuary", dataType = Column.DataType.STRING)
+    public String sanctuary;
 
-    @Column(columnName = "protection", dataType = Column.DataType.BOOLEAN)
-    public boolean protection;
+    @Column(columnName = "protection", dataType = Column.DataType.STRING)
+    public String protection;
 
-    @Column(columnName = "creeperNerf", dataType = Column.DataType.BOOLEAN)
-    public boolean creeperNerf;
+    @Column(columnName = "creeperNerf", dataType = Column.DataType.STRING)
+    public String creeperNerf;
 
     @Column(columnName = "welcome", dataType = Column.DataType.STRING)
     public String welcome;

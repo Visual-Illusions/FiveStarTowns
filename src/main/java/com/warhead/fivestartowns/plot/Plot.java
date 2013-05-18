@@ -6,14 +6,15 @@
  */
 package com.warhead.fivestartowns.plot;
 
-import com.warhead.fivestartowns.FlagType;
-import static com.warhead.fivestartowns.FlagType.CREEPER_NERF;
-import static com.warhead.fivestartowns.FlagType.FRIENDLY_FIRE;
-import static com.warhead.fivestartowns.FlagType.NO_PVP;
-import static com.warhead.fivestartowns.FlagType.OWNER_PLOT;
-import static com.warhead.fivestartowns.FlagType.PROTECTION;
-import static com.warhead.fivestartowns.FlagType.SANCTUARY;
-import com.warhead.fivestartowns.FlagValue;
+import com.warhead.fivestartowns.flag.Flagable;
+import com.warhead.fivestartowns.flag.FlagType;
+import static com.warhead.fivestartowns.flag.FlagType.CREEPER_NERF;
+import static com.warhead.fivestartowns.flag.FlagType.FRIENDLY_FIRE;
+import static com.warhead.fivestartowns.flag.FlagType.NO_PVP;
+import static com.warhead.fivestartowns.flag.FlagType.OWNER_PLOT;
+import static com.warhead.fivestartowns.flag.FlagType.PROTECTION;
+import static com.warhead.fivestartowns.flag.FlagType.SANCTUARY;
+import com.warhead.fivestartowns.flag.FlagValue;
 import com.warhead.fivestartowns.town.TownPlayer;
 import com.warhead.fivestartowns.town.TownManager;
 import com.warhead.fivestartowns.town.Town;
@@ -28,7 +29,7 @@ import net.canarymod.database.exceptions.DatabaseWriteException;
  *
  * @author Somners
  */
-public class Plot {
+public class Plot implements Flagable {
 
     private final PlotAccess data;
 
@@ -80,6 +81,7 @@ public class Plot {
      * Get the name of the owner of this plot within the town.
      * @return
      */
+    @Override
     public String getPlotOwnerName() {
         return data.owner;
     }
@@ -88,6 +90,7 @@ public class Plot {
      * Get the TownPlayer instance of the owner of this plot within the town.
      * @return
      */
+    @Override
     public TownPlayer getPlotOwner() {
         return TownManager.get().getTownPlayer(data.owner);
     }
@@ -97,7 +100,8 @@ public class Plot {
      * @param type
      * @return 
      */
-    public FlagValue setFlag(FlagType type, FlagValue value) {
+    @Override
+    public void setFlag(FlagType type, FlagValue value) {
         switch(type) {
             case NO_PVP:
                 this.setNoPvp(value);
@@ -112,9 +116,9 @@ public class Plot {
             case OWNER_PLOT:
                 this.setOwnerPlot(value);
         }
-        return null;
     }
 
+    @Override
     public FlagValue getFlagValue(FlagType type) {
         switch(type) {
             case NO_PVP:
@@ -132,11 +136,67 @@ public class Plot {
         }
         return null;
     }
-
+       
+    /**
+     *
+     * @param flag
+     * @return
+     */
+    public boolean canUseFlag(FlagType flag) {
+        return this.getTown().canUseFlag(flag);
+    }
+    
+    /**
+     *
+     * @param flag
+     * @return
+     */
+    public boolean canUseFlag(String flag) {
+        return this.getTown().canUseFlag(flag);
+    }
+    
+    /**
+     * Gets a list of flags that can be set.
+     * @return 
+     */
+    @Override
+    public List<FlagType> getFlags() {
+        List<FlagType> list = new ArrayList<FlagType>();
+        for (String name : this.getTown().getTownRank().getFlags()) {
+            list.add(FlagType.fromString(name));
+        }
+        return list;
+    }
+    
+    /**
+     * Gets a list of flags that can be set.
+     * @return 
+     */
+    @Override
+    public List<String> getFlagNames() {
+        List<String> list = new ArrayList<String>();
+        for (String name : this.getTown().getTownRank().getFlags()) {
+            list.add(name);
+        }
+        return list;
+    }
+     
+    @Override
+    public String[] getEnabledFlags() {
+        List<String> list = new ArrayList<String>();
+        for (FlagType type : this.getFlags()) {
+            if (this.getFlagValue(type).getBoolean()) {
+                list.add(type.getName());
+            }
+        }
+        return list.toArray(new String[list.size()]);
+    }
+    
     /**
      * Sets whether or not pvp is disabled. 
      * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
+    @Override
     public void setNoPvp(FlagValue value) {
         data.nopvp = value.toString();
         try {
@@ -151,6 +211,7 @@ public class Plot {
      * Sets whether or not this is an owner plot. 
      * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
+    @Override
     public void setOwnerPlot(FlagValue value) {
         data.ownerPlot = value.toString();
         try {
@@ -165,6 +226,7 @@ public class Plot {
      * Sets whether or not protection is enabled 
      * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
+    @Override
     public void setProtected(FlagValue value) {
         data.protection = value.toString();
         try {
@@ -179,6 +241,7 @@ public class Plot {
      * Sets whether or not sanctuary is enabledfalse - sanctuary off
      * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
+    @Override
     public void setSanctuary(FlagValue value) {
         data.sanctuary = value.toString();
         try {
@@ -193,6 +256,7 @@ public class Plot {
      * Sets whether or not creepers are disabled 
      * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
+    @Override
     public void setCreeperNerf(FlagValue value) {
         data.creeperNerf = value.toString();
         try {
@@ -207,6 +271,7 @@ public class Plot {
      * Sets whether or not friendly fire is enabled 
      * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
      */
+    @Override
     public void setFriendlyFire(FlagValue value) {
         data.friendlyFire = value.toString();
         try {
@@ -221,6 +286,7 @@ public class Plot {
      * Is pvp Allowed?
      * @return true - pvp disabled<br>false - pvp enabled
      */
+    @Override
     public boolean getNoPvp() {
         if (data.nopvp.equals(FlagValue.NULL.toString())) {
             return this.getTown().getNoPvp();
@@ -232,6 +298,7 @@ public class Plot {
      * Are protections on?
      * @return true - enabled<br>false - disabled
      */
+    @Override
     public boolean getProtected() {
         if (data.protection.equals(FlagValue.NULL.toString())) {
             return this.getTown().getProtected();
@@ -243,6 +310,7 @@ public class Plot {
      * Can mobs Spawn?
      * @return true - mob spawning blocked<br>false - mob spawning allowed
      */
+    @Override
     public boolean getSanctuary() {
         if (data.sanctuary.equals(FlagValue.NULL.toString())) {
             return this.getTown().getSanctuary();
@@ -254,6 +322,7 @@ public class Plot {
      * Are Creepers Nerfed?
      * @return true - creepers disabled<br>false - creepers enabled
      */
+    @Override
     public boolean getCreeperNerf() {
         if (data.creeperNerf.equals(FlagValue.NULL.toString())) {
             return this.getTown().getCreeperNerf();
@@ -265,6 +334,7 @@ public class Plot {
      * Is friendly Fire on?
      * @return true - FF enabled<br>false - FF disabled
      */
+    @Override
     public boolean getFriendlyFire() {
         if (data.friendlyFire.equals(FlagValue.NULL.toString())) {
             return this.getTown().getFriendlyFire();
