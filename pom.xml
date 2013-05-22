@@ -56,7 +56,7 @@
                     <extensions>true</extensions>
                     <configuration>
                         <serverId>nexus</serverId>
-                        <nexusUrl>http://nexus.somners.net/content/repositories/Somners</nexusUrl>
+                        <nexusUrl>http://repo.somners.net</nexusUrl>
                     </configuration>
                 </plugin>
             </plugins>
@@ -75,7 +75,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>nexus</id>
-            <url>http://nexus.somners.net/content/repositories/Somners</url>
+            <url>http://repo.somners.net</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
