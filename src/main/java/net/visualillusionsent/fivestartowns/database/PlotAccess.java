@@ -43,24 +43,6 @@ public class PlotAccess extends DataAccess {
     @Column(columnName = "owner", dataType = Column.DataType.STRING)
     public String owner;
 
-    @Column(columnName = "ownerPlot", dataType = Column.DataType.STRING)
-    public String ownerPlot;
-
-    @Column(columnName = "nopvp", dataType = Column.DataType.STRING)
-    public String nopvp;
-
-    @Column(columnName = "friendlyFire", dataType = Column.DataType.STRING)
-    public String friendlyFire;
-
-    @Column(columnName = "sanctuary", dataType = Column.DataType.STRING)
-    public String sanctuary;
-
-    @Column(columnName = "protection", dataType = Column.DataType.STRING)
-    public String protection;
-
-    @Column(columnName = "creeperNerf", dataType = Column.DataType.STRING)
-    public String creeperNerf;
-
     @Override
     public DataAccess getInstance() {
         return new PlotAccess();

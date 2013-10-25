@@ -1,7 +1,7 @@
 package net.visualillusionsent.fivestartowns.flag;
 
-import net.visualillusionsent.fivestartowns.town.TownPlayer;
 import java.util.List;
+import net.visualillusionsent.fivestartowns.town.TownPlayer;
 
 /**
  *
@@ -15,6 +15,12 @@ public interface Flagable {
      */
     boolean getCreeperNerf();
 
+    /**
+     * Gets the { @link FlagValue } for the  { @link FlagType } for this plot.
+     *
+     * @param type
+     * @return
+     */
     FlagValue getFlagValue(FlagType type);
 
     /**
@@ -104,6 +110,8 @@ public interface Flagable {
     boolean canUseFlag(String flag);
 
     /**
+     * Checks if this { @link FlagType } can be used by the town controlling this
+     * plot. This is a convenience method.
      *
      * @param flag
      * @return
@@ -124,4 +132,11 @@ public interface Flagable {
 
    String[] getEnabledFlags();
 
+   /**
+    * Checks whether or not the flag is enabled for this plot.  Checks the town
+    * global config if the value is FlagType.NULL.
+    * 
+    * @return
+    */
+   boolean isFlagEnabled();
 }

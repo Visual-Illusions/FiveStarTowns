@@ -132,6 +132,8 @@ public class Plot implements Flagable {
     }
 
     /**
+     * Checks if this { @link FlagType } can be used by the town controlling this
+     * plot.
      *
      * @param flag
      * @return
@@ -141,6 +143,8 @@ public class Plot implements Flagable {
     }
 
     /**
+     * Checks if this { @link FlagType } can be used by the town controlling this
+     * plot.
      *
      * @param flag
      * @return
