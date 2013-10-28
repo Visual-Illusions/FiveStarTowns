@@ -1,142 +1,131 @@
 package net.visualillusionsent.fivestartowns.flag;
 
+import java.util.ArrayList;
 import java.util.List;
-import net.visualillusionsent.fivestartowns.town.TownPlayer;
+import net.visualillusionsent.fivestartowns.Saveable;
+import static net.visualillusionsent.fivestartowns.flag.FlagType.CREEPER_NERF;
+import static net.visualillusionsent.fivestartowns.flag.FlagType.FRIENDLY_FIRE;
+import static net.visualillusionsent.fivestartowns.flag.FlagType.NO_PVP;
+import static net.visualillusionsent.fivestartowns.flag.FlagType.OWNER_PLOT;
+import static net.visualillusionsent.fivestartowns.flag.FlagType.PROTECTION;
+import static net.visualillusionsent.fivestartowns.flag.FlagType.SANCTUARY;
 
 /**
  *
  * @author somners
  */
-public interface Flagable {
+public abstract class Flagable extends Saveable {
 
-    /**
-     * Are Creepers Nerfed?
-     * @return true - creepers disabled<br>false - creepers enabled
-     */
-    boolean getCreeperNerf();
+    public FlagValue ownerPlot;
+    public FlagValue nopvp;
+    public FlagValue friendlyFire;
+    public FlagValue sanctuary;
+    public FlagValue protection;
+    public FlagValue creeperNerf;
 
+    public Flagable(){}
+
+    public Flagable(String ownerPlot, String nopvp, String friendlyFire,
+            String sanctuary, String protection, String creeperNerf) {
+        this.ownerPlot = FlagValue.valueOf(ownerPlot);
+        this.nopvp = FlagValue.valueOf(nopvp);
+        this.friendlyFire = FlagValue.valueOf(friendlyFire);
+        this.sanctuary = FlagValue.valueOf(sanctuary);
+        this.protection = FlagValue.valueOf(protection);
+        this.creeperNerf = FlagValue.valueOf(creeperNerf);
+    }
     /**
-     * Gets the { @link FlagValue } for the  { @link FlagType } for this plot.
+     * Sets the { @link FlagType } to the given { @link FlagValue}.
      *
      * @param type
      * @return
      */
-    FlagValue getFlagValue(FlagType type);
+    public void setFlagValue(FlagType type, FlagValue value) {
+        switch(type) {
+            case NO_PVP:
+                this.nopvp = value;
+                this.setDirty(true);
+                break;
+            case FRIENDLY_FIRE:
+                this.friendlyFire = value;
+                this.setDirty(true);
+                break;
+            case SANCTUARY:
+                this.sanctuary = value;
+                this.setDirty(true);
+                break;
+            case PROTECTION:
+                this.protection = value;
+                this.setDirty(true);
+                break;
+            case CREEPER_NERF:
+                this.creeperNerf = value;
+                this.setDirty(true);
+                break;
+            case OWNER_PLOT:
+                this.ownerPlot = value;
+                this.setDirty(true);
+                break;
+        }
+    }
 
     /**
-     * Is friendly Fire on?
-     * @return true - FF enabled<br>false - FF disabled
-     */
-    boolean getFriendlyFire();
-
-    /**
-     * Is pvp Allowed?
-     * @return true - pvp disabled<br>false - pvp enabled
-     */
-    boolean getNoPvp();
-
-    /**
-     * Get the TownPlayer instance of the owner of this plot within the town.
-     * @return
-     */
-    TownPlayer getPlotOwner();
-
-    /**
-     * Get the name of the owner of this plot within the town.
-     * @return
-     */
-    String getPlotOwnerName();
-
-    /**
-     * Are protections on?
-     * @return true - enabled<br>false - disabled
-     */
-    boolean getProtected();
-
-    /**
-     * Can mobs Spawn?
-     * @return true - mob spawning blocked<br>false - mob spawning allowed
-     */
-    boolean getSanctuary();
-
-    /**
-     * Sets whether or not creepers are disabled
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    void setCreeperNerf(FlagValue value);
-
-    /**
-     * Sets this flagtype and returns what the FlagType was set to.
+     * Gets the { @link FlagValue } for the { @link FlagType } for this Flagable type.
+     *
      * @param type
      * @return
      */
-    void setFlag(FlagType type, FlagValue value);
+    public FlagValue getFlagValue(FlagType type) {
+        switch(type) {
+            case NO_PVP:
+                return this.nopvp;
+            case FRIENDLY_FIRE:
+                return this.friendlyFire;
+            case SANCTUARY:
+                return this.sanctuary;
+            case PROTECTION:
+                return this.protection;
+            case CREEPER_NERF:
+                return this.creeperNerf;
+            case OWNER_PLOT:
+                return this.ownerPlot;
+        }
+        return null;
+    }
 
     /**
-     * Sets whether or not friendly fire is enabled
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
+     * Gets a list of flags enabled for the Flagable type.
+     * @return
      */
-    void setFriendlyFire(FlagValue value);
+    public String[] getEnabledFlags() {
+        List<String> flags = new ArrayList<String>();
+        if (this.creeperNerf.getBoolean()) {
+            flags.add(creeperNerf.toString());
+        }
+        if (this.friendlyFire.getBoolean()) {
+            flags.add(this.friendlyFire.toString());
+        }
+        if (this.nopvp.getBoolean()) {
+            flags.add(this.nopvp.toString());
+        }
+        if (this.ownerPlot.getBoolean()) {
+            flags.add(this.ownerPlot.toString());
+        }
+        if (this.protection.getBoolean()) {
+            flags.add(this.protection.toString());
+        }
+        if (this.sanctuary.getBoolean()) {
+            flags.add(this.sanctuary.toString());
+        }
+        return flags.toArray(new String[flags.size()]);
+    }
 
     /**
-     * Sets whether or not pvp is disabled.
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    void setNoPvp(FlagValue value);
-
-    /**
-     * Sets whether or not this is an owner plot.
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    void setOwnerPlot(FlagValue value);
-
-    /**
-     * Sets whether or not protection is enabled
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    void setProtected(FlagValue value);
-
-    /**
-     * Sets whether or not sanctuary is enabledfalse - sanctuary off
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    void setSanctuary(FlagValue value);
-
-     /**
+     * Checks whether or not the flag is enabled for this Flagable type.
      *
-     * @param flag
      * @return
      */
-    boolean canUseFlag(String flag);
-
-    /**
-     * Checks if this { @link FlagType } can be used by the town controlling this
-     * plot. This is a convenience method.
-     *
-     * @param flag
-     * @return
-     */
-    public boolean canUseFlag(FlagType flag);
-
-    /**
-     * Gets a list of flags that can be set.
-     * @return
-     */
-    public List<FlagType> getFlags();
-
-    /**
-     * Gets a list of flags that can be set.
-     * @return
-     */
-    public List<String> getFlagNames();
-
-   String[] getEnabledFlags();
-
-   /**
-    * Checks whether or not the flag is enabled for this plot.  Checks the town
-    * global config if the value is FlagType.NULL.
-    * 
-    * @return
-    */
-   boolean isFlagEnabled();
+    public boolean isFlagEnabled(FlagType type) {
+        return getFlagValue(type).getBoolean();
+    }
 }

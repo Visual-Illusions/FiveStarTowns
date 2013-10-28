@@ -11,17 +11,15 @@ import net.visualillusionsent.fivestartowns.canary.listeners.FiveStarTownsListen
 import net.visualillusionsent.fivestartowns.database.PlotAccess;
 import net.visualillusionsent.fivestartowns.database.TownAccess;
 import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
-import net.visualillusionsent.minecraft.plugin.canary.VisualIllusionsCanaryPlugin;
 
 /**
  *
  * @author Somners
  */
-public class CanaryFiveStarTowns extends VisualIllusionsCanaryPlugin implements FiveStarTowns {
+public class CanaryFiveStarTowns extends FiveStarTowns {
 
     private FSTCommandListener commands;
     private FiveStarTownsListener listener;
-    private static FiveStarTowns instance;
 
     public boolean enable() {
         instance = this;
@@ -45,10 +43,6 @@ public class CanaryFiveStarTowns extends VisualIllusionsCanaryPlugin implements 
 
     @Override
     public void disable() {
-    }
-
-    public static FiveStarTowns get() {
-        return instance;
     }
 
     public boolean createTables() {

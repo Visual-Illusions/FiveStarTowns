@@ -8,7 +8,7 @@ import net.canarymod.database.DataAccess;
  * Data Storage object for a town.
  * @author Somners
  */
-public class TownAccess extends DataAccess {
+public class TownAccess extends FlagAccess {
 
     public TownAccess() {
         super("towns");
@@ -40,21 +40,6 @@ public class TownAccess extends DataAccess {
 
     @Column(columnName = "bonusPlots", dataType = Column.DataType.INTEGER)
     public int bonusPlots;
-
-    @Column(columnName = "nopvp", dataType = Column.DataType.STRING)
-    public String nopvp;
-
-    @Column(columnName = "friendlyFire", dataType = Column.DataType.STRING)
-    public String friendlyFire;
-
-    @Column(columnName = "sanctuary", dataType = Column.DataType.STRING)
-    public String sanctuary;
-
-    @Column(columnName = "protection", dataType = Column.DataType.STRING)
-    public String protection;
-
-    @Column(columnName = "creeperNerf", dataType = Column.DataType.STRING)
-    public String creeperNerf;
 
     @Column(columnName = "welcome", dataType = Column.DataType.STRING)
     public String welcome;

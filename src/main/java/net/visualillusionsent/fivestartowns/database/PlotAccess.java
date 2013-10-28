@@ -7,7 +7,7 @@ import net.canarymod.database.DataAccess;
  * Data Storage object for a town.
  * @author Somners
  */
-public class PlotAccess extends DataAccess {
+public class PlotAccess extends FlagAccess {
 
     public PlotAccess() {
         super("plots");

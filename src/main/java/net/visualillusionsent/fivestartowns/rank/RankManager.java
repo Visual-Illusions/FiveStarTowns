@@ -46,7 +46,7 @@ public class RankManager {
      * @return the towns rank
      */
     public TownRank getRank(Town town) {
-        int pop = town.getMemberSize();
+        int pop = town.getPopulation();
         TownRank rank = null;
         for (TownRank r : ranks) {
             if (rank == null) {

@@ -1,19 +1,6 @@
 package net.visualillusionsent.fivestartowns.plot;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.canarymod.Canary;
-import net.canarymod.database.Database;
-import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.database.PlotAccess;
-import net.visualillusionsent.fivestartowns.flag.FlagType;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.CREEPER_NERF;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.FRIENDLY_FIRE;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.NO_PVP;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.OWNER_PLOT;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.PROTECTION;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.SANCTUARY;
-import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
@@ -23,9 +10,21 @@ import net.visualillusionsent.fivestartowns.town.TownPlayer;
  *
  * @author Somners
  */
-public class Plot implements Flagable {
+public class Plot extends Flagable {
 
-    private final PlotAccess data;
+    private PlotAccess data = null;
+    /** X coordinate for this plot. */
+    private int x;
+    /** Z coordinate for this plot. */
+    private int z;
+    /** World Name that contains this plot. */
+    private String world;
+    /** Town Name that owns this plot. */
+    private String town;
+    /** Player Name that owns this plot. */
+    private String owner;
+
+    public Plot() {}
 
     public Plot(PlotAccess access) {
         this.data = access;
@@ -36,7 +35,7 @@ public class Plot implements Flagable {
      * @return
      */
     public int getX() {
-        return data.x;
+        return x;
     }
 
     /**
@@ -44,7 +43,7 @@ public class Plot implements Flagable {
      * @return
      */
     public int getZ() {
-        return data.z;
+        return z;
     }
 
     /**
@@ -52,7 +51,7 @@ public class Plot implements Flagable {
      * @return
      */
     public String getWorldName() {
-        return data.world;
+        return world;
     }
 
     /**
@@ -60,7 +59,7 @@ public class Plot implements Flagable {
      * @return
      */
     public String getTownName() {
-        return data.town;
+        return town;
     }
 
     /**
@@ -68,284 +67,39 @@ public class Plot implements Flagable {
      * @return
      */
     public Town getTown() {
-        return TownManager.get().getTown(data.town);
+        return TownManager.get().getTown(town);
     }
 
     /**
      * Get the name of the owner of this plot within the town.
      * @return
      */
-    @Override
     public String getPlotOwnerName() {
-        return data.owner;
+        return owner;
     }
 
     /**
      * Get the TownPlayer instance of the owner of this plot within the town.
      * @return
      */
-    @Override
     public TownPlayer getPlotOwner() {
-        return TownManager.get().getTownPlayer(data.owner);
+        return TownManager.get().getTownPlayer(owner);
     }
 
     /**
-     * Sets this flagtype and returns what the FlagType was set to.
-     * @param type
+     * Get the TownPlayer instance of the owner of this plot within the town.
      * @return
      */
-    @Override
-    public void setFlag(FlagType type, FlagValue value) {
-        switch(type) {
-            case NO_PVP:
-                this.setNoPvp(value);
-            case FRIENDLY_FIRE:
-                this.setFriendlyFire(value);
-            case SANCTUARY:
-                this.setSanctuary(value);
-            case PROTECTION:
-                this.setProtected(value);
-            case CREEPER_NERF:
-                this.setCreeperNerf(value);
-            case OWNER_PLOT:
-                this.setOwnerPlot(value);
-        }
-    }
-
-    @Override
-    public FlagValue getFlagValue(FlagType type) {
-        switch(type) {
-            case NO_PVP:
-                return FlagValue.getType(data.nopvp);
-            case FRIENDLY_FIRE:
-                return FlagValue.getType(data.friendlyFire);
-            case SANCTUARY:
-                return FlagValue.getType(data.sanctuary);
-            case PROTECTION:
-                return FlagValue.getType(data.protection);
-            case CREEPER_NERF:
-                return FlagValue.getType(data.creeperNerf);
-            case OWNER_PLOT:
-                return FlagValue.getType(data.ownerPlot);
-        }
-        return null;
-    }
-
-    /**
-     * Checks if this { @link FlagType } can be used by the town controlling this
-     * plot.
-     *
-     * @param flag
-     * @return
-     */
-    public boolean canUseFlag(FlagType flag) {
-        return this.getTown().canUseFlag(flag);
-    }
-
-    /**
-     * Checks if this { @link FlagType } can be used by the town controlling this
-     * plot.
-     *
-     * @param flag
-     * @return
-     */
-    public boolean canUseFlag(String flag) {
-        return this.getTown().canUseFlag(flag);
-    }
-
-    /**
-     * Gets a list of flags that can be set.
-     * @return
-     */
-    @Override
-    public List<FlagType> getFlags() {
-        List<FlagType> list = new ArrayList<FlagType>();
-        for (String name : this.getTown().getTownRank().getFlags()) {
-            list.add(FlagType.fromString(name));
-        }
-        return list;
-    }
-
-    /**
-     * Gets a list of flags that can be set.
-     * @return
-     */
-    @Override
-    public List<String> getFlagNames() {
-        List<String> list = new ArrayList<String>();
-        for (String name : this.getTown().getTownRank().getFlags()) {
-            list.add(name);
-        }
-        return list;
-    }
-
-    @Override
-    public String[] getEnabledFlags() {
-        List<String> list = new ArrayList<String>();
-        for (FlagType type : this.getFlags()) {
-            if (this.getFlagValue(type).getBoolean()) {
-                list.add(type.getName());
-            }
-        }
-        return list.toArray(new String[list.size()]);
-    }
-
-    /**
-     * Sets whether or not pvp is disabled.
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    @Override
-    public void setNoPvp(FlagValue value) {
-        data.nopvp = value.toString();
-        try {
-            Database.get().update(data, new String[]{"nopvp"}, new Object[]{data.ownerPlot});
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error updating 'ownerPlot' in Plot '"
-                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
-        }
-    }
-
-    /**
-     * Sets whether or not this is an owner plot.
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    @Override
-    public void setOwnerPlot(FlagValue value) {
-        data.ownerPlot = value.toString();
-        try {
-            Database.get().update(data, new String[]{"ownerPlot"}, new Object[]{data.ownerPlot});
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error updating 'ownerPlot' in Plot '"
-                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
-        }
-    }
-
-    /**
-     * Sets whether or not protection is enabled
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    @Override
-    public void setProtected(FlagValue value) {
-        data.protection = value.toString();
-        try {
-            Database.get().update(data, new String[]{"protection"}, new Object[]{data.protection});
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error updating 'protection' in Plot '"
-                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
-        }
-    }
-
-    /**
-     * Sets whether or not sanctuary is enabledfalse - sanctuary off
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    @Override
-    public void setSanctuary(FlagValue value) {
-        data.sanctuary = value.toString();
-        try {
-            Database.get().update(data, new String[]{"sanctuary"}, new Object[]{data.sanctuary});
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error updating 'sanctuary' in Plot '"
-                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
-        }
-    }
-
-    /**
-     * Sets whether or not creepers are disabled
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    @Override
-    public void setCreeperNerf(FlagValue value) {
-        data.creeperNerf = value.toString();
-        try {
-            Database.get().update(data, new String[]{"creeperNerf"}, new Object[]{data.creeperNerf});
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error updating 'creeperNerf' in Plot '"
-                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
-        }
-    }
-
-    /**
-     * Sets whether or not friendly fire is enabled
-     * @param value TRUE = enabled<br>FALSE = disabled<br>NULL = use global
-     */
-    @Override
-    public void setFriendlyFire(FlagValue value) {
-        data.friendlyFire = value.toString();
-        try {
-            Database.get().update(data, new String[]{"friendlyFire"}, new Object[]{data.friendlyFire});
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error updating 'friendlyFire' in Plot '"
-                    + data.x + ":" + data.z + ":" + data.world + "'. ", ex);
-        }
-    }
-
-    /**
-     * Is pvp Allowed?
-     * @return true - pvp disabled<br>false - pvp enabled
-     */
-    @Override
-    public boolean getNoPvp() {
-        if (data.nopvp.equals(FlagValue.NULL.toString())) {
-            return this.getTown().getNoPvp();
-        }
-        return FlagValue.getType(data.nopvp).getBoolean();
-    }
-
-    /**
-     * Are protections on?
-     * @return true - enabled<br>false - disabled
-     */
-    @Override
-    public boolean getProtected() {
-        if (data.protection.equals(FlagValue.NULL.toString())) {
-            return this.getTown().getProtected();
-        }
-        return FlagValue.getType(data.protection).getBoolean();
-    }
-
-    /**
-     * Can mobs Spawn?
-     * @return true - mob spawning blocked<br>false - mob spawning allowed
-     */
-    @Override
-    public boolean getSanctuary() {
-        if (data.sanctuary.equals(FlagValue.NULL.toString())) {
-            return this.getTown().getSanctuary();
-        }
-        return FlagValue.getType(data.sanctuary).getBoolean();
-    }
-
-    /**
-     * Are Creepers Nerfed?
-     * @return true - creepers disabled<br>false - creepers enabled
-     */
-    @Override
-    public boolean getCreeperNerf() {
-        if (data.creeperNerf.equals(FlagValue.NULL.toString())) {
-            return this.getTown().getCreeperNerf();
-        }
-        return FlagValue.getType(data.creeperNerf).getBoolean();
-    }
-
-    /**
-     * Is friendly Fire on?
-     * @return true - FF enabled<br>false - FF disabled
-     */
-    @Override
-    public boolean getFriendlyFire() {
-        if (data.friendlyFire.equals(FlagValue.NULL.toString())) {
-            return this.getTown().getFriendlyFire();
-        }
-        return FlagValue.getType(data.friendlyFire).getBoolean();
+    public TownPlayer getPlotOwner() {
+        return TownManager.get().getTownPlayer(owner);
     }
 
     public boolean isPlotEqual(int x, int z, String world) {
-        if (data.x != x) {
+        if (x != x) {
             return false;
-        } else if (data.z != z) {
+        } else if (z != z) {
             return false;
-        } else if (!data.world.equals(world)) {
+        } else if (!world.equals(world)) {
             return false;
         }
         return true;
@@ -360,5 +114,15 @@ public class Plot implements Flagable {
 
     public PlotAccess getAccess() {
         return data;
+    }
+
+    @Override
+    public void load() {
+        throw new UnsupportedOperationException("Method 'load' in class 'Plot' is not supported yet.");
+    }
+
+    @Override
+    public void save() {
+        throw new UnsupportedOperationException("Method 'save' in class 'Plot' is not supported yet.");
     }
 }

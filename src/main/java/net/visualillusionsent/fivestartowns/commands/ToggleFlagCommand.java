@@ -66,14 +66,14 @@ public class ToggleFlagCommand extends FSTCommand {
                 player.message(Config.get().getMessageHeader() + "This plot " +
                         "does not belong to your town.");
             }
-            plot.setFlag(type, value);
+            plot.setFlagValue(type, value);
             player.message(Config.get().getMessageHeader() + "Flag " + Colors.GREEN +
                     type.getName() + Colors.WHITE + " for this plot has been toggled to " +
                     Colors.GREEN + value.toString());
             return;
         }
         else if (command[0].equalsIgnoreCase("global")) {
-            town.setFlag(type, value);
+            town.setFlagValue(type, value);
             player.message(Config.get().getMessageHeader() + "Flag " + Colors.GREEN +
                     type.getName() + Colors.WHITE + "has been toggled to " + Colors.GREEN +
                     String.valueOf(town.getFlagValue(type)));
