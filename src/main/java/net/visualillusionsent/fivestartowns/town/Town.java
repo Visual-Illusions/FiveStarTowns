@@ -249,4 +249,28 @@ public class Town extends Flagable {
     public int getCurrentClaimCount() {
         return PlotManager.get().getTownPlots(this.getName()).length;
     }
+
+    private final String OWNER_PLOT = "ownerPlot";
+    private final String NO_PVP = "nopvp";
+    private final String FRIENDLY_FIRE = "friendlyFire";
+    private final String SANCTUARY = "sanctuary";
+    private final String PROTECTION = "protection";
+    private final String CREEPER_NERF = "creeperNerf";
+    private final String NAME = "name";
+    private final String OWNER = "owner";
+    private final String ASSISTANT = "assistant";
+    private final String MEMBERS = "members";
+    private final String BONUS_PLOTS = "bonusPlots";
+    private final String WELCOME = "welcome";
+    private final String FAREWELL = "farewell";
+
+    @Override
+    public void load() {
+        throw new UnsupportedOperationException("Method 'load' in class 'Town' is not supported yet.");
+    }
+
+    @Override
+    public void save() {
+        throw new UnsupportedOperationException("Method 'save' in class 'Town' is not supported yet.");
+    }
 }

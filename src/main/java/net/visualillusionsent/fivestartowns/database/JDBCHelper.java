@@ -1,5 +1,6 @@
 package net.visualillusionsent.fivestartowns.database;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,34 @@ import java.util.List;
  * @author Somners
  */
 public class JDBCHelper {
+
+    public enum DataType {
+        INTEGER(Integer.class), FLOAT(Float.class), DOUBLE(Double.class), LONG(Long.class), SHORT(Short.class), BYTE(Byte.class), STRING(String.class), BOOLEAN(Boolean.class);
+
+        private Class<?> cls;
+
+        DataType(Class<?> cls) {
+            this.cls = cls;
+        }
+
+        public boolean isAssignable(Class<?> cls) {
+            return this.cls.isAssignableFrom(cls);
+        }
+
+        public static DataType fromString(String in) {
+            for (DataType t : DataType.values()) {
+                if (in.equalsIgnoreCase(t.name())) {
+                    return t;
+                }
+            }
+            return STRING;
+        }
+
+        public Class<?> getTypeClass() {
+            return cls;
+        }
+    }
+
     private static final String LIST_REGEX = "\u00B6";
 
     /**
@@ -38,7 +67,7 @@ public class JDBCHelper {
 *
 * @return
 */
-    public static List<Comparable<?>> getList(Column.DataType type, String field) {
+    public static List<Comparable<?>> getList(DataType type, String field) {
         List<Comparable<?>> list = new ArrayList<Comparable<?>>();
         if (field == null) {
             return list;
@@ -102,7 +131,7 @@ public class JDBCHelper {
         return o;
     }
 
-    public static String getDataTypeSyntax(Column.DataType type) {
+    public static String getDataTypeSyntax(DataType type) {
         switch (type) {
             case BYTE:
                 return "INT";

@@ -86,14 +86,6 @@ public class Plot extends Flagable {
         return TownManager.get().getTownPlayer(owner);
     }
 
-    /**
-     * Get the TownPlayer instance of the owner of this plot within the town.
-     * @return
-     */
-    public TownPlayer getPlotOwner() {
-        return TownManager.get().getTownPlayer(owner);
-    }
-
     public boolean isPlotEqual(int x, int z, String world) {
         if (x != x) {
             return false;
@@ -115,6 +107,18 @@ public class Plot extends Flagable {
     public PlotAccess getAccess() {
         return data;
     }
+
+    private final String OWNER_PLOT = "ownerPlot";
+    private final String NO_PVP = "nopvp";
+    private final String FRIENDLY_FIRE = "friendlyFire";
+    private final String SANCTUARY = "sanctuary";
+    private final String PROTECTION = "protection";
+    private final String CREEPER_NERF = "creeperNerf";
+    private final String X = "x";
+    private final String Z = "z";
+    private final String WORLD = "world";
+    private final String TOWN = "town";
+    private final String OWNER = "owner";
 
     @Override
     public void load() {
