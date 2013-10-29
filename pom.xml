@@ -29,19 +29,19 @@
             <name>GNU General Public License v3</name>
             <url>http://www.gnu.org/licenses/gpl.html</url>
             <comments>
-                dConomy is free software: you can redistribute it and/or modify
+                FiveStarTowns is free software: you can redistribute it and/or modify
                 it under the terms of the GNU General Public License as published by
                 the Free Software Foundation, either version 3 of the License, or
                 (at your option) any later version.
 
-                dConomy is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+                FiveStarTowns is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
                 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
                 See the GNU General Public License for more details.
             </comments>
         </license>
     </licenses>
 
-    <inceptionYear>2011</inceptionYear>
+    <inceptionYear>2012</inceptionYear>
     <organization>
         <name>Visual Illusions Entertainment</name>
         <url>http://visualillusionsent.net</url>
@@ -78,12 +78,6 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-        <!-- Vault Repository ##NOT NEEDED##
-        <repository>
-            <id>vault-repo</id>
-            <url>http://ci.herocraftonline.com/plugin/repository/everything/</url>
-        </repository>
-         -->
     </repositories>
 
     <dependencies>
@@ -92,13 +86,6 @@
             <artifactId>vimcplugin</artifactId>
             <version>${vimcplugin.version}</version>
         </dependency>
-        <!-- For Bukkit Users, We add support for Vault directly (at this time anyways)##NOT NEEDED##
-        <dependency>
-            <groupId>net.milkbowl</groupId>
-            <artifactId>vault</artifactId>
-            <version>1.2.27</version>
-        </dependency>
-         -->
     </dependencies>
 
     <build>
