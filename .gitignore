@@ -9,3 +9,5 @@
 *.prefs
 *.sw?
 /src/test/*
+*.iml
+/.idea
