@@ -1,16 +1,16 @@
 package net.visualillusionsent.fivestartowns.commands;
 
+import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
+import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
 import net.visualillusionsent.fivestartowns.flag.FlagType;
 import net.visualillusionsent.fivestartowns.flag.FlagValue;
-import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.plot.Plot;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
-import net.canarymod.chat.Colors;
 
 /**
  *
@@ -30,7 +30,7 @@ public class ToggleFlagCommand extends FSTCommand {
             player.message(Config.get().getMessageHeader() + "Correct Usage: "
                     + Colors.GREEN + this.getUsage() + Colors.WHITE + "   " +
                     this.getDescription());
-            player.message(Colors.GREEN + "Available flags: " + town.getFlagNames().toString());
+            player.message(Colors.GREEN + "Available flags: " + town.getTownRank().getFlags().toString());
             return;
         }
         FlagType type = FlagType.fromString(command[1]);
@@ -43,20 +43,20 @@ public class ToggleFlagCommand extends FSTCommand {
         if (type == null) {
             player.message(Config.get().getMessageHeader() + "Not a valid " +
                     "flag type: " + Colors.GREEN + command[1]);
-            player.message(Colors.GREEN + "Available flags: " + town.getFlagNames().toString());
+            player.message(Colors.GREEN + "Available flags: " + town.getTownRank().getFlags().toString());
             return;
         }
         if (!town.canUseFlag(command[1])) {
             player.message(Config.get().getMessageHeader() + "Your town cannot " +
                     "use this flag: " + Colors.GREEN + command[1]);
-            player.message(Colors.GREEN + "Available flags: " + town.getFlagNames().toString());
+            player.message(Colors.GREEN + "Available flags: " + town.getTownRank().getFlags().toString());
             return;
         }
         FlagValue value = FlagValue.getType(command[2]);
         if (value == null) {
             player.message(Config.get().getMessageHeader() + "Not a valid flag " +
                     "value: " + Colors.GREEN + command[2]);
-            player.message(Colors.GREEN + "Available flag values: NULL, TRUE, FALSE" + town.getFlagNames().toString());
+            player.message(Colors.GREEN + "Available flag values: NULL, TRUE, FALSE" + town.getTownRank().getFlags().toString());
             return;
         }
         TownPlayer tp = TownManager.get().getTownPlayer(player);

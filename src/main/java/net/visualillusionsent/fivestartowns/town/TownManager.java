@@ -1,52 +1,25 @@
 package net.visualillusionsent.fivestartowns.town;
 
-import net.visualillusionsent.fivestartowns.database.TownAccess;
-import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
-import net.visualillusionsent.fivestartowns.player.IPlayer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
-import net.canarymod.database.DataAccess;
-import net.canarymod.database.Database;
-import net.canarymod.database.exceptions.DatabaseReadException;
-import net.canarymod.database.exceptions.DatabaseWriteException;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.visualillusionsent.fivestartowns.Saveable;
+import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
+import net.visualillusionsent.fivestartowns.player.IPlayer;
 
 /**
  *
  * @author Somners
  */
-public class TownManager {
+public class TownManager extends Saveable {
 
-    private static final HashMap<String, TownPlayerAccess> players = new HashMap<String, TownPlayerAccess>();
-    private static final HashMap<String, TownAccess> towns = new HashMap<String, TownAccess>();
+    private static final HashMap<String, TownPlayer> players = new HashMap<String, TownPlayer>();
+    private static final HashMap<String, Town> towns = new HashMap<String, Town>();
     private static TownManager instance = null;
-
-    public TownManager() {
-        if (players.isEmpty()) {
-            List<DataAccess> dataList = new ArrayList<DataAccess>();
-            try {
-                Database.get().loadAll(new TownPlayerAccess(), dataList, new String[]{}, new Object[]{});
-            } catch (DatabaseReadException ex) {
-                Canary.logStacktrace("Error loading Town Players Table in 'TownManager.class'. ", ex);
-            }
-            for (DataAccess data : dataList) {
-                players.put(((TownPlayerAccess)data).name, (TownPlayerAccess)data);
-            }
-        }
-        if (towns.isEmpty()) {
-            List<DataAccess> dataList = new ArrayList<DataAccess>();
-            try {
-                Database.get().loadAll(new TownAccess(), dataList, new String[]{}, new Object[]{});
-            } catch (DatabaseReadException ex) {
-                Canary.logStacktrace("Error loading Town Table in 'TownManager.class'. ", ex);
-            }
-            for (DataAccess data : dataList) {
-                towns.put(((TownAccess)data).name, (TownAccess)data);
-            }
-        }
-    }
 
     public static TownManager get() {
         if (instance == null) {
@@ -66,7 +39,7 @@ public class TownManager {
 
     public TownPlayer getTownPlayer(String playerName) {
         if (players.containsKey(playerName)) {
-            return new TownPlayer(players.get(playerName));
+            return players.get(playerName);
         }
         return null;
     }
@@ -81,55 +54,130 @@ public class TownManager {
 
     public Town getTownFromPlayer(String playerName) {
         if (players.containsKey(playerName)) {
-            return this.getTown(players.get(playerName).townName);
+            return this.getTown(players.get(playerName).getTownName());
         }
         return null;
+    }
+
+    public List<String> getMemberNames(String town) {
+        List<String> toRet = new ArrayList<String>();
+        for (TownPlayer tp : players.values()) {
+            if (tp.getTownName().equalsIgnoreCase(town)) {
+                toRet.add(tp.getName());
+            }
+        }
+        return toRet;
+    }
+
+    public List<TownPlayer> getMembers(String town) {
+        List<TownPlayer> toRet = new ArrayList<TownPlayer>();
+        for (TownPlayer tp : players.values()) {
+            if (tp.getTownName().equalsIgnoreCase(town)) {
+                toRet.add(tp);
+            }
+        }
+        return toRet;
+    }
+
+    public List<String> getMemberNames(Town town) {
+        return this.getMemberNames(town.getName());
+    }
+
+    public List<TownPlayer> getMembers(Town town) {
+        return this.getMembers(town.getName());
     }
 
     public Town getTown(String townName) {
         if (towns.containsKey(townName)) {
-            return new Town(towns.get(townName));
+            return towns.get(townName);
         }
         return null;
     }
 
-    public void addTown(TownAccess data) {
-        try {
-            towns.put(data.name, data);
-            Database.get().insert(data);
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error Adding Town at: " + data.toString(), ex);
+    public void addTown(Town data) {
+        data.setDirty(true);
+        towns.put(data.getName(), data);
+    }
+
+    public void deleteTown(Town data) {
+        if (towns.containsKey(data.name)) {
+            FiveStarTowns.database().deleteEntry(TOWN_TABLE,
+                    FiveStarTowns.database().newQuery().add(NAME, data.getName()));
+            towns.remove(data.name);
         }
     }
 
-    public void removeTown(TownAccess data) {
+    public void addTownPlayer(TownPlayer data) {
+        data.setDirty(true);
+            players.put(data.getName(), data);
+    }
+
+    public void deleteTownPlayer(TownPlayerAccess data) {
+        if (towns.containsKey(data.name)) {
+            FiveStarTowns.database().deleteEntry(TOWN_TABLE,
+                    FiveStarTowns.database().newQuery().add(NAME, data.getName()));
+            towns.remove(data.name);
+        }
+    }
+
+    private final String TOWN_PLAYER_TABLE = "town_Players";
+    private final String TOWN_TABLE = "towns";
+    private final String NAME = "name";
+
+    @Override
+    public void load() {
+        ResultSet rs = null;
+
         try {
-            if (towns.containsKey(data.name)) {
-                Database.get().remove(data.getName(), new String[] {"name"}, new Object[] {data.name});
-                towns.remove(data.name);
+            /*
+             * Load Towns
+             */
+            if (!towns.isEmpty()) {
+                towns.clear();
             }
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error Deleting Town at: " + data.toString(), ex);
-        }
-    }
-
-    public void addTownPlayer(TownPlayerAccess data) {
-        try {
-            players.put(data.name, data);
-            Database.get().insert(data);
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error Adding Town Player at: " + data.toString(), ex);
-        }
-    }
-
-    public void removeTownPlayer(TownPlayerAccess data) {
-        try {
-            if (players.containsKey(data.name)) {
-                Database.get().remove(data.getName(), new String[] {"name"}, new Object[] {data.name});
-                players.remove(data.name);
+            rs = FiveStarTowns.database().getResultSet(TOWN_TABLE, null, 100);
+            if (rs != null) {
+                while (rs.next()) {
+                    Town toLoad = new Town(rs.getString(NAME));
+                    toLoad.load();
+                    towns.put(toLoad.getName(), toLoad);
+                }
             }
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error Deleting Town Player at: " + data.toString(), ex);
+            FiveStarTowns.database().closeRSAndPS(rs);
+            /*
+             * Load Players
+             */
+            if (!players.isEmpty()) {
+                players.clear();
+            }
+            rs = FiveStarTowns.database().getResultSet(TOWN_PLAYER_TABLE, null, 5000);
+            if (rs != null) {
+                while (rs.next()) {
+                    Town toLoad = new Town(rs.getString(NAME));
+                    toLoad.load();
+                    towns.put(toLoad.getName(), toLoad);
+                }
+            }
+            FiveStarTowns.database().closeRSAndPS(rs);
+        } catch (SQLException ex) {
+            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
+                    + TOWN_TABLE);
+        }
+    }
+
+    @Override
+    public void save() {
+        for (Town t : towns.values()) {
+            if (t.isDirty()) {
+                t.save();
+                t.setDirty(false);
+            }
+        }
+        for (TownPlayer tp : players.values()) {
+            if (tp.isDirty()) {
+                tp.save();
+                tp.setDirty(false);
+            }
         }
     }
 }

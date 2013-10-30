@@ -1,41 +1,24 @@
 package net.visualillusionsent.fivestartowns.plot;
 
-import net.visualillusionsent.fivestartowns.database.PlotAccess;
-import net.visualillusionsent.fivestartowns.player.IPlayer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.api.world.position.Location;
-import net.canarymod.database.DataAccess;
-import net.canarymod.database.Database;
-import net.canarymod.database.exceptions.DatabaseReadException;
-import net.canarymod.database.exceptions.DatabaseWriteException;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.visualillusionsent.fivestartowns.Saveable;
+import net.visualillusionsent.fivestartowns.player.IPlayer;
 
 /**
  *
  * @author Somners
  */
-public class PlotManager {
+public class PlotManager extends Saveable {
 
-    private static final HashMap<String, PlotAccess> plots = new HashMap<String, PlotAccess>();
+    private static final HashMap<String, Plot> plots = new HashMap<String, Plot>();
     private static PlotManager instance = null;
-
-    public PlotManager() {
-        if (plots.isEmpty()) {
-            List<DataAccess> dataList = new ArrayList<DataAccess>();
-            try {
-                Database.get().loadAll(new PlotAccess(), dataList, new String[]{}, new Object[]{});
-            } catch (DatabaseReadException ex) {
-                Canary.logStacktrace("Error loading Plot Table in 'PlotManager.class'. ", ex);
-            }
-            for (DataAccess data : dataList) {
-                PlotAccess plot = (PlotAccess)data;
-                plots.put(plot.x+":"+plot.z+":"+plot.world, (PlotAccess)data);
-            }
-        }
-    }
 
     public static PlotManager get() {
         if (instance == null) {
@@ -47,7 +30,7 @@ public class PlotManager {
     public Plot getFSTPlot(int x, int z, String world) {
         String plot = x+":"+z+":"+world;
         if (plots.containsKey(plot)) {
-            return new Plot(plots.get(plot));
+            return plots.get(plot);
         }
         return null;
     }
@@ -71,9 +54,9 @@ public class PlotManager {
      */
     public Plot[] getTownPlots(String townName) {
         List list = new ArrayList();
-        for (PlotAccess plot : plots.values()) {
-            if (plot.town.equalsIgnoreCase(townName)) {
-                list.add(new Plot(plot));
+        for (Plot plot : plots.values()) {
+            if (plot.getTownName().equalsIgnoreCase(townName)) {
+                list.add(plot);
             }
         }
         return (Plot[])list.toArray(new Plot[list.size()]);
@@ -96,42 +79,74 @@ public class PlotManager {
      * @return
      */
     public boolean isPlotNextToTown(int x, int z, String world, String townName) {
-        if (plots.containsKey((x+1)+":"+z+":"+world) && plots.get((x+1)+":"+z+":"+world).town.equalsIgnoreCase(townName)) {
+        if (plots.containsKey((x+1)+":"+z+":"+world) && plots.get((x+1)+":"+z+":"+world).getTownName().equalsIgnoreCase(townName)) {
             return true;
         }
-        if (plots.containsKey((x-1)+":"+z+":"+world) && plots.get((x-1)+":"+z+":"+world).town.equalsIgnoreCase(townName)) {
+        if (plots.containsKey((x-1)+":"+z+":"+world) && plots.get((x-1)+":"+z+":"+world).getTownName().equalsIgnoreCase(townName)) {
             return true;
         }
-        if (plots.containsKey(x+":"+(z+1)+":"+world) && plots.get(x+":"+(z+1)+":"+world).town.equalsIgnoreCase(townName)) {
+        if (plots.containsKey(x+":"+(z+1)+":"+world) && plots.get(x+":"+(z+1)+":"+world).getTownName().equalsIgnoreCase(townName)) {
             return true;
         }
-        if (plots.containsKey(x+":"+(z-1)+":"+world) && plots.get(x+":"+(z-1)+":"+world).town.equalsIgnoreCase(townName)) {
+        if (plots.containsKey(x+":"+(z-1)+":"+world) && plots.get(x+":"+(z-1)+":"+world).getTownName().equalsIgnoreCase(townName)) {
             return true;
         }
         return false;
     }
 
-    private String extractKey(PlotAccess plot) {
-        return plot.x+":"+plot.z+":"+plot.world;
+    private String extractKey(Plot plot) {
+        return plot.getX()+":"+plot.getZ()+":"+plot.getWorldName();
     }
 
-    public void addPlot(PlotAccess data) {
-        try {
-            plots.put(extractKey(data), data);
-            Database.get().insert(data);
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error Adding Land Claim at: " + data.toString(), ex);
+    public void addNewPlot(Plot data) {
+        plots.put(extractKey(data), data);
+    }
+
+    public void removePlot(Plot data) {
+        if (plots.containsKey(extractKey(data))) {
+            plots.remove(extractKey(data));
+            FiveStarTowns.database().deleteEntry(PLOT_TABLE,
+                    FiveStarTowns.database().newQuery().add(X, data.getX()).add(Z, data.getZ()).add(WORLD, data.getWorldName()));
         }
     }
 
-    public void removePlot(PlotAccess data) {
+    /**
+     * Database Stuff.
+     */
+    private final String PLOT_TABLE = "plots";
+    private final String X = "x";
+    private final String Z = "z";
+    private final String WORLD = "world";
+
+    @Override
+    public void load() {
+        ResultSet rs = null;
+
         try {
-            if (plots.containsKey(extractKey(data))) {
-                Database.get().remove(data.getName(), new String[] {"x", "z", "world"}, new Object[] {data.x, data.z, data.world});
-                plots.remove(extractKey(data));
+            rs = FiveStarTowns.database().getResultSet(PLOT_TABLE, null, 1000);
+            if (rs != null) {
+                while (rs.next()) {
+                    String world = rs.getString(WORLD);
+                    int z = rs.getInt(Z);
+                    int x = rs.getInt(X);
+                    Plot toLoad = new Plot(x, z, world);
+                    toLoad.load();
+                    plots.put(x+":"+z+":"+world, toLoad);
+                }
             }
-        } catch (DatabaseWriteException ex) {
-            Canary.logStacktrace("Error Deleting Land Claim at: " + data.toString(), ex);
+        } catch (SQLException ex) {
+            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
+                    + PLOT_TABLE);
+        }
+    }
+
+    @Override
+    public void save() {
+        for (Plot p : plots.values()) {
+            if (p.isDirty()) {
+                p.save();
+                p.setDirty(false);
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 package net.visualillusionsent.fivestartowns.commands;
 
 import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.database.PlotAccess;
 import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.plot.Plot;
@@ -10,6 +9,7 @@ import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
 import net.canarymod.chat.Colors;
+import net.visualillusionsent.fivestartowns.flag.FlagValue;
 
 /**
  *
@@ -44,19 +44,10 @@ public class ClaimCommand extends FSTCommand {
                     + "Try claiming a plot next to your town.");
             return;
         }
-        PlotAccess data = new PlotAccess();
-        data.x = player.getChunkX();
-        data.z = player.getChunkZ();
-        data.world = player.getWorldName();
-        data.creeperNerf = "NULL";
-        data.friendlyFire = "NULL";
-        data.nopvp = "NULL";
-        data.protection = "NULL";
-        data.sanctuary = "NULL";
-        data.ownerPlot = "NULL";
-        data.town = town.getName();
-        data.owner = "";
-        PlotManager.get().addPlot(data);
+        Plot data = new Plot(player.getChunkX(), player.getChunkZ(), player.getWorldName(),
+                town.getName(), "", FlagValue.NULL, FlagValue.NULL,
+                FlagValue.NULL, FlagValue.NULL, FlagValue.NULL, FlagValue.NULL);
+        PlotManager.get().addNewPlot(data);
 
         player.message(Config.get().getMessageHeader() + "Plot Claimed for " + Colors.GREEN + town.getName() + "!");
 

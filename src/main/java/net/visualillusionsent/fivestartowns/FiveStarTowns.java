@@ -1,5 +1,6 @@
 package net.visualillusionsent.fivestartowns;
 
+import net.visualillusionsent.fivestartowns.database.FSTDatabase;
 import net.visualillusionsent.minecraft.plugin.canary.VisualIllusionsCanaryPlugin;
 
 /**
@@ -9,8 +10,13 @@ import net.visualillusionsent.minecraft.plugin.canary.VisualIllusionsCanaryPlugi
 public abstract class FiveStarTowns extends VisualIllusionsCanaryPlugin {
 
     protected static FiveStarTowns instance;
+    protected static FSTDatabase data;
 
     public static FiveStarTowns get() {
         return instance;
+    }
+
+    public static FSTDatabase database() {
+        return data;
     }
 }

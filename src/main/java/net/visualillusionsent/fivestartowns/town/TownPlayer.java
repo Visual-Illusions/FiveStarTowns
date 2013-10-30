@@ -1,8 +1,11 @@
 
 package net.visualillusionsent.fivestartowns.town;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
 import net.visualillusionsent.fivestartowns.Saveable;
-import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
+import net.visualillusionsent.fivestartowns.database.FSTDatabase;
 
 /**
  *
@@ -10,10 +13,11 @@ import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
  */
 public class TownPlayer extends Saveable {
 
-    private final TownPlayerAccess data;
+    private final String name;
+    private String townName;
 
-    public TownPlayer(TownPlayerAccess data) {
-        this.data = data;
+    public TownPlayer(String name) {
+        this.name = name;
     }
 
     /**
@@ -21,7 +25,7 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public String getName() {
-        return data.name;
+        return name;
     }
 
     /**
@@ -29,7 +33,7 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public String getTownName() {
-        return data.townName;
+        return townName;
     }
 
     /**
@@ -37,7 +41,7 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public Town getTown() {
-        return TownManager.get().getTown(data.townName);
+        return TownManager.get().getTown(townName);
     }
 
     /**
@@ -56,16 +60,33 @@ public class TownPlayer extends Saveable {
         return this.getTown().getAssistantName().contains(this.getName());
     }
 
+    private final String TOWN_PLAYER_TABLE = "town_Players";
     private final String NAME = "name";
     private final String TOWN_NAME = "townName";
 
     @Override
     public void load() {
-        throw new UnsupportedOperationException("Method 'load' in class 'TownPlayer' is not supported yet.");
+        ResultSet rs = null;
+
+        try {
+            rs = FiveStarTowns.database().getResultSet(TOWN_PLAYER_TABLE,
+                    FiveStarTowns.database().newQuery().add(NAME, name), 1);
+
+            if (rs != null && rs.next()) {
+                this.townName = rs.getString(TOWN_NAME);
+            }
+        } catch (SQLException ex) {
+            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
+                    + TOWN_PLAYER_TABLE);
+        }
     }
 
     @Override
     public void save() {
-        throw new UnsupportedOperationException("Method 'save' in class 'TownPlayer' is not supported yet.");
+        FSTDatabase.Query where = FiveStarTowns.database().newQuery();
+        where.add(NAME, name);
+        FSTDatabase.Query update = FiveStarTowns.database().newQuery();
+        update.add(TOWN_NAME, townName);
+        FiveStarTowns.database().updateEntry(TOWN_PLAYER_TABLE, where, update);
     }
 }

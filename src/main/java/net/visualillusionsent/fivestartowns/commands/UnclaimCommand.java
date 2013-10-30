@@ -1,5 +1,6 @@
 package net.visualillusionsent.fivestartowns.commands;
 
+import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
 import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
@@ -8,7 +9,6 @@ import net.visualillusionsent.fivestartowns.plot.PlotManager;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
-import net.canarymod.chat.Colors;
 
 /**
  *
@@ -30,7 +30,7 @@ public class UnclaimCommand extends FSTCommand {
                     + "not owned by your town. You cannot unclaim it.");
             return;
         }
-        PlotManager.get().removePlot(plot.getAccess());
+        PlotManager.get().removePlot(plot);
 
         player.message(Config.get().getMessageHeader() + "Plot UnClaimed for " + Colors.GREEN + town.getName() + "!");
 

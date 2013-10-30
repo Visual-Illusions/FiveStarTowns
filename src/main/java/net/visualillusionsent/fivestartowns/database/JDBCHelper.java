@@ -67,7 +67,7 @@ public class JDBCHelper {
 *
 * @return
 */
-    public static List<Comparable<?>> getList(DataType type, String field) {
+    public static List<?> getList(DataType type, String field) {
         List<Comparable<?>> list = new ArrayList<Comparable<?>>();
         if (field == null) {
             return list;

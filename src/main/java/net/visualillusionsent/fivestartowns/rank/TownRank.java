@@ -1,70 +1,67 @@
 package net.visualillusionsent.fivestartowns.rank;
 
 import java.util.List;
-import net.visualillusionsent.fivestartowns.Saveable;
-import net.visualillusionsent.fivestartowns.database.RankAccess;
 
 /**
  *
  * @author Somners
  */
-public class TownRank extends Saveable {
+public class TownRank {
 
-    private RankAccess data;
+    /** Population needed for this Rank */
+    public int populationReq;
+    /** Type of this town. Currently unused. */
+    public String townType;
+    public String mayorPrefix;
+    public String mayorSuffix;
+    public String assistantPrefix;
+    public String assistantSuffix;
+    public String townPrefix;
+    public String townSuffix;
+    public List<String> flags;
 
-    public TownRank(RankAccess data) {
-        this.data = data;
+    public TownRank(int popReq, String townType, String mayorPrefix, String mayorSuffix,
+            String assistantPrefix, String assistantSuffix, String townPrefix, String townSuffix, List<String> flags) {
+        this.populationReq = popReq;
+        this.townType = townType;
+        this.mayorPrefix = mayorPrefix;
+        this.mayorSuffix = mayorSuffix;
+        this.assistantPrefix = assistantPrefix;
+        this.assistantSuffix = assistantSuffix;
+        this.townPrefix = townPrefix;
+        this.townSuffix = townSuffix;
+        this.flags = flags;
     }
 
     public int getPopulationRequirement() {
-        return data.populationReq;
+        return populationReq;
     }
 
     public String getMayorPrefix() {
-        return data.mayorPrefix;
+        return mayorPrefix;
     }
 
     public String getMayorSuffix() {
-        return data.mayorSuffix;
+        return mayorSuffix;
     }
 
     public String getAssistantPrefix() {
-        return data.assistantPrefix;
+        return assistantPrefix;
     }
 
     public String getAssistantSuffix() {
-        return data.assistantSuffix;
+        return assistantSuffix;
     }
 
     public String getTownPrefix() {
-        return data.townPrefix;
+        return townPrefix;
     }
 
     public String getTownSuffix() {
-        return data.townSuffix;
+        return townSuffix;
     }
 
     public List<String> getFlags() {
-        return data.flags;
-    }
-
-    private final String POPULATION_REQ = "populationReq";
-    private final String TOWN_TYPE = "townType";
-    private final String MAYOR_PREFIX = "mayorPrefix";
-    private final String MAYOR_SUFFIX = "mayorSuffix";
-    private final String ASSISTANT_PREFIX = "assistantPrefix";
-    private final String ASSISTANT_SUFFIX = "assistantSuffix";
-    private final String TOWN_PREFIX = "townPrefix";
-    private final String TOWN_SUFFIX = "townSuffix";
-    private final String FLAGS = "flags";
-
-    @Override
-    public void load() {
-        throw new UnsupportedOperationException("Method 'load' in class 'TownRank' is not supported yet.");
-    }
-
-    @Override
-    public void save() {
-        throw new UnsupportedOperationException("Method 'save' in class 'TownRank' is not supported yet.");
+        return flags;
     }
 }

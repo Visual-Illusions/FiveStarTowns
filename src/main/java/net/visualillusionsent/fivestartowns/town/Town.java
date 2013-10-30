@@ -1,11 +1,16 @@
 
 package net.visualillusionsent.fivestartowns.town;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.database.TownAccess;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.visualillusionsent.fivestartowns.database.FSTDatabase;
+import net.visualillusionsent.fivestartowns.database.JDBCHelper;
 import net.visualillusionsent.fivestartowns.flag.FlagType;
+import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
 import net.visualillusionsent.fivestartowns.rank.RankManager;
@@ -17,21 +22,17 @@ import net.visualillusionsent.fivestartowns.rank.TownRank;
  */
 public class Town extends Flagable {
 
-    private final TownAccess data;
-    /** ID for this Town, serves as Primary Key, Auto Incremented. */
-    public int id;
     /** Name of this Town. */
     public String name;
     public String owner;
     public List<String> assistant;
-    public List<String> members;
     public double balance;
     public int bonusPlots;
     public String welcome;
     public String farewell;
 
-    public Town(TownAccess town) {
-        this.data = town;
+    public Town(String name) {
+        this.name = name;
     }
 
     /**
@@ -63,7 +64,7 @@ public class Town extends Flagable {
      * @return
      */
     public List<String> getMembers() {
-        return members;
+        return FiveStarTowns.database().getTownPlayerNames(name);
     }
 
     /**
@@ -72,7 +73,7 @@ public class Town extends Flagable {
      * @return
      */
     public int getPopulation() {
-        return members.size() + assistant.size() + 1;
+        return getMembers().size();
     }
 
     /**
@@ -250,6 +251,7 @@ public class Town extends Flagable {
         return PlotManager.get().getTownPlots(this.getName()).length;
     }
 
+    private final String TOWN_TABLE = "towns";
     private final String OWNER_PLOT = "ownerPlot";
     private final String NO_PVP = "nopvp";
     private final String FRIENDLY_FIRE = "friendlyFire";
@@ -259,18 +261,45 @@ public class Town extends Flagable {
     private final String NAME = "name";
     private final String OWNER = "owner";
     private final String ASSISTANT = "assistant";
-    private final String MEMBERS = "members";
     private final String BONUS_PLOTS = "bonusPlots";
     private final String WELCOME = "welcome";
     private final String FAREWELL = "farewell";
 
     @Override
     public void load() {
-        throw new UnsupportedOperationException("Method 'load' in class 'Town' is not supported yet.");
+        ResultSet rs = null;
+
+        try {
+            rs = FiveStarTowns.database().getResultSet(TOWN_TABLE,
+                    FiveStarTowns.database().newQuery().add(NAME, name), 1);
+
+            if (rs != null && rs.next()) {
+                this.creeperNerf = FlagValue.getType(rs.getString(CREEPER_NERF));
+                this.friendlyFire = FlagValue.getType(rs.getString(FRIENDLY_FIRE));
+                this.nopvp = FlagValue.getType(rs.getString(NO_PVP));
+                this.ownerPlot = FlagValue.getType(rs.getString(OWNER_PLOT));
+                this.protection = FlagValue.getType(rs.getString(PROTECTION));
+                this.sanctuary = FlagValue.getType(rs.getString(SANCTUARY));
+                this.owner = rs.getString(OWNER);
+                this.bonusPlots = rs.getInt(BONUS_PLOTS);
+                this.welcome = rs.getString(WELCOME);
+                this.farewell = rs.getString(FAREWELL);
+            }
+        } catch (SQLException ex) {
+            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
+                    + TOWN_TABLE);
+        }
     }
 
     @Override
     public void save() {
-        throw new UnsupportedOperationException("Method 'save' in class 'Town' is not supported yet.");
+        FSTDatabase.Query where = FiveStarTowns.database().newQuery();
+        where.add(NAME, name);
+        FSTDatabase.Query update = FiveStarTowns.database().newQuery();
+        update.add(OWNER, owner).add(ASSISTANT, JDBCHelper.getListString(assistant)).add(OWNER_PLOT, ownerPlot);
+        update.add(NO_PVP, nopvp).add(FRIENDLY_FIRE, friendlyFire).add(SANCTUARY, sanctuary);
+        update.add(PROTECTION, protection).add(CREEPER_NERF, creeperNerf).add(BONUS_PLOTS, bonusPlots);
+        update.add(WELCOME, welcome).add(FAREWELL, farewell);
+        FiveStarTowns.database().updateEntry(TOWN_TABLE, where, update);
     }
 }

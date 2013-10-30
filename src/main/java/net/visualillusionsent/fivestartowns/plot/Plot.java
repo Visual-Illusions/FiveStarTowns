@@ -1,6 +1,10 @@
 package net.visualillusionsent.fivestartowns.plot;
 
-import net.visualillusionsent.fivestartowns.database.PlotAccess;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.visualillusionsent.fivestartowns.database.FSTDatabase.Query;
+import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
@@ -12,7 +16,6 @@ import net.visualillusionsent.fivestartowns.town.TownPlayer;
  */
 public class Plot extends Flagable {
 
-    private PlotAccess data = null;
     /** X coordinate for this plot. */
     private int x;
     /** Z coordinate for this plot. */
@@ -20,14 +23,29 @@ public class Plot extends Flagable {
     /** World Name that contains this plot. */
     private String world;
     /** Town Name that owns this plot. */
-    private String town;
+    private String town = "";
     /** Player Name that owns this plot. */
-    private String owner;
+    private String owner = "";
 
-    public Plot() {}
+    public Plot(int x, int z, String world) {
+        this.x = x;
+        this.z = z;
+        this.world = world;
+    }
 
-    public Plot(PlotAccess access) {
-        this.data = access;
+    public Plot(int x, int z, String world, String town, String owner, FlagValue ownerPlot, FlagValue nopvp,
+            FlagValue friendlyFire, FlagValue sanctuary, FlagValue protection, FlagValue creeperNerf) {
+        this.x = x;
+        this.z = z;
+        this.world = world;
+        this.town = town;
+        this.owner = owner;
+        this.ownerPlot = ownerPlot;
+        this.nopvp = nopvp;
+        this.friendlyFire = friendlyFire;
+        this.sanctuary = sanctuary;
+        this.protection = protection;
+        this.creeperNerf = creeperNerf;
     }
 
     /**
@@ -104,10 +122,10 @@ public class Plot extends Flagable {
         return plot.getTownName().equals(this.getTownName());
     }
 
-    public PlotAccess getAccess() {
-        return data;
-    }
-
+    /*
+     * Database Stuff.
+     */
+    private final String PLOT_TABLE = "plots";
     private final String OWNER_PLOT = "ownerPlot";
     private final String NO_PVP = "nopvp";
     private final String FRIENDLY_FIRE = "friendlyFire";
@@ -122,11 +140,39 @@ public class Plot extends Flagable {
 
     @Override
     public void load() {
-        throw new UnsupportedOperationException("Method 'load' in class 'Plot' is not supported yet.");
+        ResultSet rs = null;
+
+        try {
+            rs = FiveStarTowns.database().getResultSet(PLOT_TABLE,
+                    FiveStarTowns.database().newQuery().add(X, x).add(Z, z).add(WORLD, world), 1);
+
+            if (rs != null && rs.next()) {
+                this.creeperNerf = FlagValue.getType(rs.getString(CREEPER_NERF));
+                this.friendlyFire = FlagValue.getType(rs.getString(FRIENDLY_FIRE));
+                this.nopvp = FlagValue.getType(rs.getString(NO_PVP));
+                this.ownerPlot = FlagValue.getType(rs.getString(OWNER_PLOT));
+                this.protection = FlagValue.getType(rs.getString(PROTECTION));
+                this.sanctuary = FlagValue.getType(rs.getString(SANCTUARY));
+                this.owner = rs.getString(OWNER);
+                this.town = rs.getString(TOWN);
+                this.world = rs.getString(WORLD);
+                this.z = rs.getInt(Z);
+                this.x = rs.getInt(X);
+            }
+        } catch (SQLException ex) {
+            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
+                    + PLOT_TABLE);
+        }
     }
 
     @Override
     public void save() {
-        throw new UnsupportedOperationException("Method 'save' in class 'Plot' is not supported yet.");
+        Query where = FiveStarTowns.database().newQuery();
+        where.add(X, x).add(Z, z).add(WORLD, world);
+        Query update = FiveStarTowns.database().newQuery();
+        update.add(TOWN, town).add(OWNER, owner).add(OWNER_PLOT, ownerPlot);
+        update.add(NO_PVP, nopvp).add(FRIENDLY_FIRE, friendlyFire).add(SANCTUARY, sanctuary);
+        update.add(PROTECTION, protection).add(CREEPER_NERF, creeperNerf);
+        FiveStarTowns.database().updateEntry(PLOT_TABLE, where, update);
     }
 }

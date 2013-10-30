@@ -17,29 +17,17 @@ import net.visualillusionsent.fivestartowns.FiveStarTowns;
 public abstract class FSTDatabase {
 
     private static Connection conn;
-    /**
-     * Takes: Table Name, Column Names, Values
-     */
+    /** Takes: Table Name, Column Names, Values */
     private final String INSERT = "INSERT INTO `%s` (%s) VALUES (%s)";
-    /**
-     * Takes: Table Name, Conditions, Limit
-     */
+    /** Takes: Table Name, Conditions, Limit */
     private final String SELECT = "SELECT * FROM `%s` WHERE %s LIMIT %s";
-    /**
-     * Takes: Table Name, Limit
-     */
+    /** Takes: Table Name, Limit */
     private final String SELECT_ALL = "SELECT * FROM `%s` LIMIT %s";
-    /**
-     * Takes: Table Name, Column Data
-     */
+    /** Takes: Table Name, Column Data */
     private final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (%s) ENGINE = INNODB";
-    /**
-     * Takes: Table Name, Column Name, JDBC Data Type Syntax
-     */
+    /** Takes: Table Name, Column Name, JDBC Data Type Syntax */
     private final String INSERT_COLUMN = "ALTER TABLE `%s` ADD `%s` %s";
-    /**
-     * Takes: Table Name, Column Name
-     */
+    /** Takes: Table Name, Column Name */
     private final String DELETE_COLUMN = "ALTER TABLE `%s` DROP `%s`";
     /** Table Names */
     private final String TOWN_PLAYER_TABLE = "town_Players";
@@ -84,7 +72,7 @@ public abstract class FSTDatabase {
         ResultSet toRet = null;
 
         try {
-            if (where.get().size() > 0) {
+            if (where != null && where.get().size() > 0) {
                 StringBuilder sb = new StringBuilder();
 
                 for (QueryEntry entry : where.get()) {
@@ -101,7 +89,7 @@ public abstract class FSTDatabase {
                 }
                 toRet = ps.executeQuery();
             } else {
-                ps = conn.prepareStatement(String.format(SELECT, table, "", limit));
+                ps = conn.prepareStatement(String.format("SELECT * FROM `%s` LIMIT %s", table, limit));
                 toRet = ps.executeQuery();
             }
         } catch (SQLException ex) {
