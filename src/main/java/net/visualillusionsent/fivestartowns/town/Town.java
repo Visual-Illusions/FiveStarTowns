@@ -251,19 +251,19 @@ public class Town extends Flagable {
         return PlotManager.get().getTownPlots(this.getName()).length;
     }
 
-    private final String TOWN_TABLE = "towns";
-    private final String OWNER_PLOT = "ownerPlot";
-    private final String NO_PVP = "nopvp";
-    private final String FRIENDLY_FIRE = "friendlyFire";
-    private final String SANCTUARY = "sanctuary";
-    private final String PROTECTION = "protection";
-    private final String CREEPER_NERF = "creeperNerf";
-    private final String NAME = "name";
-    private final String OWNER = "owner";
-    private final String ASSISTANT = "assistant";
-    private final String BONUS_PLOTS = "bonusPlots";
-    private final String WELCOME = "welcome";
-    private final String FAREWELL = "farewell";
+    public static final String TOWN_TABLE = "towns";
+    public static final String OWNER_PLOT = "ownerPlot";
+    public static final String NO_PVP = "nopvp";
+    public static final String FRIENDLY_FIRE = "friendlyFire";
+    public static final String SANCTUARY = "sanctuary";
+    public static final String PROTECTION = "protection";
+    public static final String CREEPER_NERF = "creeperNerf";
+    public static final String NAME = "name";
+    public static final String OWNER = "owner";
+    public static final String ASSISTANT = "assistant";
+    public static final String BONUS_PLOTS = "bonusPlots";
+    public static final String WELCOME = "welcome";
+    public static final String FAREWELL = "farewell";
 
     @Override
     public void load() {

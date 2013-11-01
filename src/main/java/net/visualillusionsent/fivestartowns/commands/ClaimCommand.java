@@ -1,15 +1,15 @@
 package net.visualillusionsent.fivestartowns.commands;
 
+import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
 import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
+import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.plot.Plot;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
-import net.canarymod.chat.Colors;
-import net.visualillusionsent.fivestartowns.flag.FlagValue;
 
 /**
  *
@@ -47,6 +47,7 @@ public class ClaimCommand extends FSTCommand {
         Plot data = new Plot(player.getChunkX(), player.getChunkZ(), player.getWorldName(),
                 town.getName(), "", FlagValue.NULL, FlagValue.NULL,
                 FlagValue.NULL, FlagValue.NULL, FlagValue.NULL, FlagValue.NULL);
+        data.setDirty(true);
         PlotManager.get().addNewPlot(data);
 
         player.message(Config.get().getMessageHeader() + "Plot Claimed for " + Colors.GREEN + town.getName() + "!");

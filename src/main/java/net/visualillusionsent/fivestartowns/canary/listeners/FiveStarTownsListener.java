@@ -1,10 +1,5 @@
 package net.visualillusionsent.fivestartowns.canary.listeners;
 
-import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.plot.Plot;
-import net.visualillusionsent.fivestartowns.plot.PlotManager;
-import net.visualillusionsent.fivestartowns.town.TownManager;
-import net.visualillusionsent.fivestartowns.town.TownPlayer;
 import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.api.entity.living.monster.Creeper;
 import net.canarymod.chat.Colors;
@@ -13,6 +8,12 @@ import net.canarymod.hook.entity.DamageHook;
 import net.canarymod.hook.player.PlayerMoveHook;
 import net.canarymod.hook.world.ExplosionHook;
 import net.canarymod.plugin.PluginListener;
+import net.visualillusionsent.fivestartowns.Config;
+import net.visualillusionsent.fivestartowns.flag.FlagType;
+import net.visualillusionsent.fivestartowns.plot.Plot;
+import net.visualillusionsent.fivestartowns.plot.PlotManager;
+import net.visualillusionsent.fivestartowns.town.TownManager;
+import net.visualillusionsent.fivestartowns.town.TownPlayer;
 
 /**
  *
@@ -55,14 +56,16 @@ public class FiveStarTownsListener implements PluginListener {
             Player defender = (Player)hook.getDefender();
             Plot a = PlotManager.get().getFSTPlot(attacker);
             Plot d = PlotManager.get().getFSTPlot(defender);
-            if ((a != null && a.getNoPvp()) || (d != null && d.getNoPvp())) {
+            if ((a != null && a.getFlagValue(FlagType.NO_PVP).getBoolean()) ||
+                    (d != null && d.getFlagValue(FlagType.NO_PVP).getBoolean())) {
                 hook.setCanceled();
                 return;
             }
             TownPlayer tpa = TownManager.get().getTownPlayer(attacker);
             TownPlayer tpd = TownManager.get().getTownPlayer(defender);
             if ((tpa != null && tpd != null) && tpa.getTownName().equals(tpd.getTownName())) {
-                if ((a != null && !a.getFriendlyFire()) || (d != null && !d.getFriendlyFire())) {
+                if ((a != null && !a.getFlagValue(FlagType.FRIENDLY_FIRE).getBoolean()) ||
+                        (d != null && !d.getFlagValue(FlagType.FRIENDLY_FIRE).getBoolean())) {
                     hook.setCanceled();
                     return;
                 }
@@ -77,7 +80,7 @@ public class FiveStarTownsListener implements PluginListener {
     public void onCreeperCreep(ExplosionHook hook) {
         if (hook.getEntity() instanceof Creeper) {
             Plot p = PlotManager.get().getFSTPlot(hook.getEntity().getLocation());
-            if (p != null && p.getCreeperNerf()) {
+            if (p != null && p.getFlagValue(FlagType.CREEPER_NERF).getBoolean()) {
                 hook.setCanceled();
             }
         }

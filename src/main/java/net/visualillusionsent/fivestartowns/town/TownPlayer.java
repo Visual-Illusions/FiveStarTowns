@@ -44,6 +44,17 @@ public class TownPlayer extends Saveable {
         return TownManager.get().getTown(townName);
     }
 
+    public void setTown(String townName) {
+        if (TownManager.get().getTown(townName) != null) {
+            this.townName = townName;
+            this.setDirty(true);
+        }
+    }
+
+    public void setTown(Town town) {
+        this.setTown(town.getName());
+    }
+
     /**
      *
      * @return
@@ -60,9 +71,9 @@ public class TownPlayer extends Saveable {
         return this.getTown().getAssistantName().contains(this.getName());
     }
 
-    private final String TOWN_PLAYER_TABLE = "town_Players";
-    private final String NAME = "name";
-    private final String TOWN_NAME = "townName";
+    public static final String TOWN_PLAYER_TABLE = "town_Players";
+    public static final String NAME = "name";
+    public static final String TOWN_NAME = "townName";
 
     @Override
     public void load() {

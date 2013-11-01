@@ -30,10 +30,10 @@ public abstract class FSTDatabase {
     /** Takes: Table Name, Column Name */
     private final String DELETE_COLUMN = "ALTER TABLE `%s` DROP `%s`";
     /** Table Names */
-    private final String TOWN_PLAYER_TABLE = "town_Players";
-    private final String TOWN_TABLE = "towns";
-    private final String RANK_TABLE = "ranks";
-    private final String PLOT_TABLE = "plots";
+    public static final String TOWN_PLAYER_TABLE = "town_Players";
+    public static final String TOWN_TABLE = "towns";
+    public static final String RANK_TABLE = "ranks";
+    public static final String PLOT_TABLE = "plots";
 
     public List<String> getTownPlayerNames(String town) {
         List<String> players = new ArrayList<String>();

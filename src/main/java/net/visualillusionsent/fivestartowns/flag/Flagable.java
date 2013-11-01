@@ -16,12 +16,12 @@ import static net.visualillusionsent.fivestartowns.flag.FlagType.SANCTUARY;
  */
 public abstract class Flagable extends Saveable {
 
-    public FlagValue ownerPlot;
-    public FlagValue nopvp;
-    public FlagValue friendlyFire;
-    public FlagValue sanctuary;
-    public FlagValue protection;
-    public FlagValue creeperNerf;
+    protected FlagValue ownerPlot;
+    protected FlagValue nopvp;
+    protected FlagValue friendlyFire;
+    protected FlagValue sanctuary;
+    protected FlagValue protection;
+    protected FlagValue creeperNerf;
 
     public Flagable(){}
 

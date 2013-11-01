@@ -1,13 +1,14 @@
 package net.visualillusionsent.fivestartowns.commands;
 
+import java.util.ArrayList;
+import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.database.TownAccess;
-import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.visualillusionsent.fivestartowns.database.FSTDatabase;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
-import java.util.ArrayList;
-import net.canarymod.chat.Colors;
+import net.visualillusionsent.fivestartowns.town.TownPlayer;
 
 /**
  *
@@ -37,25 +38,30 @@ public class CreateCommand extends FSTCommand {
                     + command[0] + Colors.WHITE + " already exists! Please pick a new name!");
             return;
         }
-        TownAccess town = new TownAccess();
-        town.name = newName;
-        town.owner = player.getName();
-        town.assistant = new ArrayList<String>();
-        town.members = new ArrayList<String>();;
-        town.balance = 0;
-        town.bonusPlots = 0;
-        town.creeperNerf = "FALSE";
-        town.friendlyFire = "FALSE";
-        town.nopvp = "FALSE";
-        town.protection = "FALSE";
-        town.sanctuary = "FALSE";
-        town.welcome = "Welcome to " + newName + "!";
-        town.farewell = "You are now leaving " + newName + "!";
+        /* insert to database */
+        FSTDatabase.Query query = FiveStarTowns.database().newQuery();
+        query.add(Town.NAME, newName).add(Town.ASSISTANT, new ArrayList<String>(), true);
+        query.add(Town.BONUS_PLOTS, 0).add(Town.CREEPER_NERF, "FALSE").add(Town.FAREWELL, "You are now leaving " + newName + "!");
+        query.add(Town.FRIENDLY_FIRE, "FALSE").add(Town.NO_PVP, "FALSE").add(Town.OWNER, player.getName());
+        query.add(Town.OWNER_PLOT, "FALSE").add(Town.PROTECTION, "FALSE").add(Town.SANCTUARY, "FALSE");
+        query.add(Town.WELCOME, "Welcome to " + newName + "!");
+        FiveStarTowns.database().insertEntry(FSTDatabase.TOWN_PLAYER_TABLE, query);
+        /* Create and load a town instance */
+        Town town = new Town(newName);
+        town.load();
+        /* Register with FST */
         TownManager.get().addTown(town);
-        TownPlayerAccess townPlayer = new TownPlayerAccess();
-        townPlayer.name = player.getName();
-        townPlayer.townName = town.name;
+
+        /* insert to database */
+        query = FiveStarTowns.database().newQuery();
+        query.add(TownPlayer.NAME, player.getName()).add(TownPlayer.TOWN_NAME, town.getName());
+        FiveStarTowns.database().insertEntry(FSTDatabase.TOWN_PLAYER_TABLE, query);
+        /* Create and load a townplayer instance */
+        TownPlayer townPlayer = new TownPlayer(player.getName());
+        townPlayer.load();
+        /* Register with FST */
         TownManager.get().addTownPlayer(townPlayer);
+
         player.message(Config.get().getMessageHeader() + "Congratulations! You are "
                 + "now the owner of " + Colors.GREEN + newName + "!");
     }

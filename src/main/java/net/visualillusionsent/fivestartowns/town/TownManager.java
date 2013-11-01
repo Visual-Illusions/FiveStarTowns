@@ -109,7 +109,7 @@ public class TownManager extends Saveable {
 
     public void addTownPlayer(TownPlayer data) {
         data.setDirty(true);
-            players.put(data.getName(), data);
+        players.put(data.getName(), data);
     }
 
     public void deleteTownPlayer(TownPlayerAccess data) {

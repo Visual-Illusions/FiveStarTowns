@@ -1,12 +1,15 @@
 package net.visualillusionsent.fivestartowns.commands;
 
+import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
+import net.visualillusionsent.fivestartowns.FiveStarTowns;
 import net.visualillusionsent.fivestartowns.InviteManager;
-import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
 import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
+import net.visualillusionsent.fivestartowns.database.FSTDatabase;
+import net.visualillusionsent.fivestartowns.database.FSTDatabase.Query;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.town.TownManager;
-import net.canarymod.chat.Colors;
+import net.visualillusionsent.fivestartowns.town.TownPlayer;
 
 /**
  *
@@ -29,12 +32,17 @@ public class AcceptInviteCommand extends FSTCommand {
             player.message(Config.get().getMessageHeader() + "You have to town invites :(");
             return;
         }
-        TownPlayerAccess townPlayer = new TownPlayerAccess();
-        townPlayer.name = player.getName();
-        townPlayer.townName = InviteManager.get().getInvite(player.getName());
+        /* insert to database */
+        Query query = FiveStarTowns.database().newQuery();
+        query.add(TownPlayer.NAME, player.getName()).add(TownPlayer.TOWN_NAME, InviteManager.get().getInvite(player.getName()));
+        FiveStarTowns.database().insertEntry(FSTDatabase.TOWN_PLAYER_TABLE, query);
+        /* Create and load a townplayer instance */
+        TownPlayer townPlayer = new TownPlayer(player.getName());
+        townPlayer.load();
+        /* Register with FST */
         TownManager.get().addTownPlayer(townPlayer);
         player.message(Config.get().getMessageHeader() + "Congratulations! You are "
-                + "now a part of " + Colors.GREEN + townPlayer.townName + "!");
+                + "now a part of " + Colors.GREEN + townPlayer.getTownName() + "!");
         InviteManager.get().removeInvite(player.getName());
     }
 
