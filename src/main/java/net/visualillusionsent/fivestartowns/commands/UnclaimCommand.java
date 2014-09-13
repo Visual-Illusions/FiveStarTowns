@@ -2,7 +2,6 @@ package net.visualillusionsent.fivestartowns.commands;
 
 import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
-import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.plot.Plot;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
@@ -14,15 +13,9 @@ import net.visualillusionsent.fivestartowns.town.TownPlayer;
  *
  * @author Somners
  */
-public class UnclaimCommand extends FSTCommand {
+public class UnclaimCommand {
 
-    public UnclaimCommand() {
-        base = new String[] {"/unclaim"};
-        usage = "/unclaim";
-        description = "Unclaims the plot you are standing in.";
-    }
-
-    public void execute(IPlayer player, String[] command) {
+    public static void execute(IPlayer player, String[] command) {
         Plot plot = PlotManager.get().getFSTPlot(player);
         Town town = TownManager.get().getTownFromPlayer(player);
         if (plot == null || !plot.getTown().equals(town)) {
@@ -36,14 +29,7 @@ public class UnclaimCommand extends FSTCommand {
 
     }
 
-    public static FSTCommand get() {
-        if (instance == null) {
-            instance = new UnclaimCommand();
-        }
-        return instance;
-    }
-
-    public boolean canUseCommand(IPlayer player) {
+    public static boolean canUseCommand(IPlayer player) {
         TownPlayer tp = TownManager.get().getTownPlayer(player);
         if (tp != null && (tp.isAssistant() || tp.isOwner())) {
             player.message(Config.get().getMessageHeader() + "You must be a "

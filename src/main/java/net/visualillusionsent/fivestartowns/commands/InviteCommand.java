@@ -13,15 +13,9 @@ import net.visualillusionsent.fivestartowns.town.TownPlayer;
  *
  * @author somners
  */
-public class InviteCommand extends FSTCommand {
+public class InviteCommand {
 
-    public InviteCommand() {
-        base = new String[] {"invite"};
-        usage = "/town invite [playername]";
-        description = "Invites this player to your town.";
-    }
-
-    public void execute(IPlayer player, String[] command) {
+    public static void execute(IPlayer player, String[] command) {
         if (command.length < 2) {
             player.message(Config.get().getMessageHeader() + "You must specify "
                     + "a player to invite.");
@@ -50,14 +44,7 @@ public class InviteCommand extends FSTCommand {
                 Colors.GREEN +"/town accept");
     }
 
-    public static FSTCommand get() {
-        if (instance == null) {
-            instance = new InviteCommand();
-        }
-        return instance;
-    }
-
-    public boolean canUseCommand(IPlayer player) {
+    public static boolean canUseCommand(IPlayer player) {
         TownPlayer tp = TownManager.get().getTownPlayer(player);
         if (tp != null && (tp.isAssistant() || tp.isOwner())) {
             player.message(Config.get().getMessageHeader() + "You must be a "

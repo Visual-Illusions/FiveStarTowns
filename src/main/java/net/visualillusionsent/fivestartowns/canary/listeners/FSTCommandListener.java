@@ -37,7 +37,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onAcceptInviteCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            AcceptInviteCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            AcceptInviteCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -49,7 +49,7 @@ public class FSTCommandListener implements CommandListener {
     public void onClaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             if (!ClaimCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
-            ClaimCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            ClaimCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -60,7 +60,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onCreateCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            CreateCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            CreateCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -71,7 +71,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onLeaveCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            LeaveCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            LeaveCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -82,7 +82,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onInfoCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            InfoCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            InfoCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -93,7 +93,8 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onInviteCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            InviteCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            if (!InviteCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            InviteCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -104,7 +105,8 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onToggleFlagCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            ToggleFlagCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            if (!ToggleFlagCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            ToggleFlagCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 
@@ -115,7 +117,8 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onUnclaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            UnclaimCommand.get().execute(new CanaryPlayer((Player)caller), args);
+            if (!UnclaimCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            UnclaimCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 }

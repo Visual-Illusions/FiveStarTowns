@@ -25,14 +25,17 @@ public class CanaryFiveStarTowns extends FiveStarTowns {
 
     public boolean enable() {
         instance = this;
+        /* Create our Database Tables */
         if (!this.createTables()) {
             this.getLogman().warn("Error Creating/Updating tables. Five Star Towns"
                     + "will not load.");
             return false;
         }
+        /* Load Database Data */
         TownManager.get().load();
         JobManager.get().load();
         PlotManager.get().load();
+        /* Register Listeners */
         commands = new FSTCommandListener();
         listener = new FiveStarTownsListener();
         try {
@@ -43,11 +46,16 @@ public class CanaryFiveStarTowns extends FiveStarTowns {
             return false;
         }
         Canary.hooks().registerListener(listener, this);
+        /* All went well, lets load the plugin */
         return true;
     }
 
     @Override
     public void disable() {
+        /* Save all our Data */
+        TownManager.get().save();
+        JobManager.get().save();
+        PlotManager.get().save();
     }
 
     public boolean createTables() {

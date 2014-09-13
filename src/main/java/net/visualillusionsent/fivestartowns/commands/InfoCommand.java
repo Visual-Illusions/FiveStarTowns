@@ -1,7 +1,6 @@
 package net.visualillusionsent.fivestartowns.commands;
 
 import net.visualillusionsent.fivestartowns.Config;
-import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.plot.Plot;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
@@ -13,16 +12,9 @@ import net.canarymod.chat.Colors;
  *
  * @author somners
  */
-public class InfoCommand extends FSTCommand {
+public class InfoCommand {
 
-    public InfoCommand() {
-        base = new String[] {"info"};
-        usage = "/town info <town name>";
-        description = "Get the plot you are standing in, or the given towns info.";
-    }
-
-    @Override
-    public void execute(IPlayer player, String[] command) {
+    public static void execute(IPlayer player, String[] command) {
         if (command.length > 1) {
             Town town = TownManager.get().getTown(command[0]);
             if (town == null) {
@@ -70,14 +62,7 @@ public class InfoCommand extends FSTCommand {
         }
     }
 
-    public static FSTCommand get() {
-        if (instance == null) {
-            instance = new InfoCommand();
-        }
-        return instance;
-    }
-
-    public boolean canUseCommand(IPlayer player) {
+    public static boolean canUseCommand(IPlayer player) {
         return true;
     }
 

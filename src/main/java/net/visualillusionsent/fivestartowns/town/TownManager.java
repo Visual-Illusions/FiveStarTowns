@@ -197,7 +197,7 @@ public class TownManager extends Saveable {
         List<DataAccess> playerData = new ArrayList<DataAccess>();
         try {
             HashMap<String, Object> filter = new HashMap<String, Object>();
-            Database.get().loadAll(new TownPlayerAccess(), townData, filter);
+            Database.get().loadAll(new TownPlayerAccess(), playerData, filter);
         } catch (DatabaseReadException ex) {
             Canary.log.trace("Error Loading TownPlayer Data.", ex);
         }

@@ -22,18 +22,12 @@ import java.util.logging.Logger;
  *
  * @author Somners
  */
-public class CreateCommand extends FSTCommand {
+public class CreateCommand {
 
-    public CreateCommand() {
-        base = new String[] {"create"};
-        description = "Creates a Town with he given name.";
-        usage = "/town create [name]";
-    }
-
-    public void execute(IPlayer player, String[] command) {
+    public static void execute(IPlayer player, String[] command) {
         if (!(command.length >= 2)) {
             player.message(Config.get().getMessageHeader() + "Improper syntax. Please use:\n  "
-                    + Colors.GREEN + this.getUsage());
+                    + Colors.GREEN + "/town create [name]");
             return;
         }
 
@@ -101,14 +95,7 @@ public class CreateCommand extends FSTCommand {
                 + "now the owner of " + Colors.GREEN + newName + "!");
     }
 
-    public static FSTCommand get() {
-        if (instance == null) {
-            instance = new CreateCommand();
-        }
-        return instance;
-    }
-
-    public boolean canUseCommand(IPlayer player) {
+    public static boolean canUseCommand(IPlayer player) {
         Town t = TownManager.get().getTownFromPlayer(player);
         if (t != null) {
             player.message(Config.get().getMessageHeader() + "You are already a part of " + Colors.GREEN

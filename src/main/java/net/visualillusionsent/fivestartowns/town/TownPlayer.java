@@ -2,7 +2,6 @@
 package net.visualillusionsent.fivestartowns.town;
 
 import net.canarymod.Canary;
-import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseReadException;
 import net.canarymod.database.exceptions.DatabaseWriteException;
@@ -22,11 +21,9 @@ public class TownPlayer extends Saveable {
     private final String uuid;
     private String name;
     private int townUUID;
-    private Player player;
 
     public TownPlayer(String uuid) {
         this.uuid = uuid;
-        player = Canary.getServer().getPlayerFromUUID(uuid);
         this.load();
     }
 
@@ -35,7 +32,7 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public String getName() {
-        return player.getName();
+        return name;
     }
     
     public String getUUID() {
@@ -90,7 +87,7 @@ public class TownPlayer extends Saveable {
 
     public void leaveTown() {
         if (townUUID != -1) {
-            JobManager.get().removeAllJobs(player.getUUIDString());
+            JobManager.get().removeAllJobs(uuid);
             townUUID = -1;
             this.setDirty(true);
         }
@@ -113,14 +110,15 @@ public class TownPlayer extends Saveable {
     @Override
     public void save() {
         TownPlayerAccess data = new TownPlayerAccess();
+        data.uuid = this.uuid;
         data.name = this.name;
         data.townUUID = this.townUUID;
         try {
             HashMap<String, Object> filter = new HashMap<String, Object>();
-            filter.put("uuid", uuid);
+            filter.put("uuid", this.uuid);
             Database.get().update(data, filter);
         } catch (DatabaseWriteException ex) {
-            Canary.log.trace("Error Loading TownPlayer Data", ex);
+            Canary.log.trace("Error Saving TownPlayer Data", ex);
         }
     }
 }
