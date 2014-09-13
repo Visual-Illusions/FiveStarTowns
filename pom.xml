@@ -15,7 +15,7 @@
         <program.status>BETA</program.status>
         <build.number>0-dev</build.number>
         <canary.main.class>${project.groupId}.${project.artifactId}.canary.CanaryFiveStarTowns</canary.main.class>
-        <vimcplugin.version>1.0.0</vimcplugin.version>
+        <vimcplugin.version>1.1.0-SNAPSHOT</vimcplugin.version>
         <viutils.version>1.2.1</viutils.version>
         <jdom2.version>2.0.5</jdom2.version>
         <build.number>0-dev</build.number>
@@ -61,14 +61,14 @@
     <distributionManagement>
         <repository>
             <id>vi-repo</id>
-            <url>ftp://repo.visualillusionsent.net/</url>
+            <url>ftp://repo.visualillusionsent.net/repository/public/</url>
         </repository>
     </distributionManagement>
     <repositories>
         <repository>
             <id>vi-repo</id>
             <name>Visual Illusions Repository</name>
-            <url>http://repo.visualillusionsent.net/</url>
+            <url>http://repo.visualillusionsent.net/repository/public/</url>
             <releases>
                 <updatePolicy>always</updatePolicy>
             </releases>
@@ -228,8 +228,9 @@
                             <Build-Time>${maven.build.timestamp}</Build-Time>
                             <VIUtils-Version>${viutils.version}</VIUtils-Version>
                             <JDOM2-Version>${jdom2.version}</JDOM2-Version>
-                            <Class-Path>../lib/viutils-${viutils.version}.jar ../lib/jdom2-${jdom2.version}.jar
-                            </Class-Path>
+                            <Class-Path>../lib/viutils-${viutils.version}.jar ../lib/jdom2-${jdom2.version}.jar</Class-Path>
+                            <Specification-Version>1.0.0</Specification-Version>
+                            <Specification-Title>FiveStarTowns</Specification-Title>
                         </manifestEntries>
                     </archive>
                 </configuration>

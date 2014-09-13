@@ -2,11 +2,7 @@ package net.visualillusionsent.fivestartowns.commands;
 
 import net.canarymod.chat.Colors;
 import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.FiveStarTowns;
 import net.visualillusionsent.fivestartowns.InviteManager;
-import static net.visualillusionsent.fivestartowns.commands.FSTCommand.instance;
-import net.visualillusionsent.fivestartowns.database.FSTDatabase;
-import net.visualillusionsent.fivestartowns.database.FSTDatabase.Query;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
@@ -24,25 +20,24 @@ public class AcceptInviteCommand extends FSTCommand {
     }
 
     public void execute(IPlayer player, String[] command) {
-        if (TownManager.get().getTownPlayer(player) != null) {
+        TownPlayer tp = TownManager.get().getTownPlayer(player);
+        if (tp.getTown() != null) {
             player.message(Config.get().getMessageHeader() + "You are already in a town.");
             return;
         }
         if (!InviteManager.get().hasInvite(player.getName())) {
-            player.message(Config.get().getMessageHeader() + "You have to town invites :(");
+            player.message(Config.get().getMessageHeader() + "You have no town invites.");
             return;
         }
-        /* insert to database */
-        Query query = FiveStarTowns.database().newQuery();
-        query.add(TownPlayer.NAME, player.getName()).add(TownPlayer.TOWN_NAME, InviteManager.get().getInvite(player.getName()));
-        FiveStarTowns.database().insertEntry(FSTDatabase.TOWN_PLAYER_TABLE, query);
-        /* Create and load a townplayer instance */
-        TownPlayer townPlayer = new TownPlayer(player.getName());
-        townPlayer.load();
-        /* Register with FST */
-        TownManager.get().addTownPlayer(townPlayer);
+        /*if (command.length < 2) {
+            player.message(Config.get().getMessageHeader() + "You must specify "
+                    + "an invite to accept.");
+            return;
+        }*/
+        int townId = InviteManager.get().getInvite(player.getName());
+        tp.setTown(townId);
         player.message(Config.get().getMessageHeader() + "Congratulations! You are "
-                + "now a part of " + Colors.GREEN + townPlayer.getTownName() + "!");
+                + "now a part of " + Colors.GREEN + tp.getTownName() + "!");
         InviteManager.get().removeInvite(player.getName());
     }
 

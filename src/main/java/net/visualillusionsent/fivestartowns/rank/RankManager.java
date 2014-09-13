@@ -48,7 +48,7 @@ public class RankManager extends Saveable {
             }
         }
         if (rank == null) {
-            Canary.logSevere("No TownRank in FiveStarTowns with a population " +
+            Canary.log.warn("No TownRank in FiveStarTowns with a population " +
                     "requirement of 0 found, errors will follow. Fix this now!!!");
         }
         return rank;

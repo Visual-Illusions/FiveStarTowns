@@ -26,4 +26,6 @@ public abstract class FSTCommand {
     public String getDescription() {
         return description;
     }
+    
+    public abstract boolean canUseCommand(IPlayer player);
 }

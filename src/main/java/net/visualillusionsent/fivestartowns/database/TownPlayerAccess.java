@@ -10,14 +10,14 @@ import net.canarymod.database.DataAccess;
 public class TownPlayerAccess extends DataAccess {
 
     public TownPlayerAccess() {
-        super("town_players");
+        super("fst_town_players");
     }
 
     /**
      * ID for this TownPlayer, serves as Primary Key, Auto Incremented.
      */
-    @Column(columnName = "id", dataType = Column.DataType.INTEGER, autoIncrement = true, columnType = Column.ColumnType.PRIMARY)
-    public int id;
+    @Column(columnName = "uuid", dataType = Column.DataType.STRING, autoIncrement = false, columnType = Column.ColumnType.PRIMARY)
+    public String uuid;
 
     /**
      * Name of this TownPlayer.
@@ -25,8 +25,8 @@ public class TownPlayerAccess extends DataAccess {
     @Column(columnName = "name", dataType = Column.DataType.STRING)
     public String name;
 
-    @Column(columnName = "town_name", dataType = Column.DataType.STRING)
-    public String townName;
+    @Column(columnName = "townUUID", dataType = Column.DataType.INTEGER)
+    public int townUUID;
 
     @Override
     public DataAccess getInstance() {

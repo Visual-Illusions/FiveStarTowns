@@ -10,7 +10,7 @@ import net.canarymod.database.DataAccess;
 public class PlotAccess extends FlagAccess {
 
     public PlotAccess() {
-        super("plots");
+        super("fst_plots");
     }
 
     /**
@@ -34,8 +34,8 @@ public class PlotAccess extends FlagAccess {
     /**
      * Town Name that owns this plot.
      */
-    @Column(columnName = "town", dataType = Column.DataType.STRING)
-    public String town;
+    @Column(columnName = "townId", dataType = Column.DataType.INTEGER)
+    public int townId;
 
     /**
      * Player Name that owns this plot.

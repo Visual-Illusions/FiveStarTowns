@@ -2,8 +2,15 @@ package net.visualillusionsent.fivestartowns.plot;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import net.canarymod.Canary;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseReadException;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.FiveStarTowns;
 import net.visualillusionsent.fivestartowns.database.FSTDatabase.Query;
+import net.visualillusionsent.fivestartowns.database.PlotAccess;
+import net.visualillusionsent.fivestartowns.database.TownAccess;
 import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
 import net.visualillusionsent.fivestartowns.town.Town;
@@ -23,7 +30,7 @@ public class Plot extends Flagable {
     /** World Name that contains this plot. */
     private String world;
     /** Town Name that owns this plot. */
-    private String town = "";
+    private int townId = -1;
     /** Player Name that owns this plot. */
     private String owner = "";
 
@@ -31,14 +38,15 @@ public class Plot extends Flagable {
         this.x = x;
         this.z = z;
         this.world = world;
+        this.load();
     }
 
-    public Plot(int x, int z, String world, String town, String owner, FlagValue ownerPlot, FlagValue nopvp,
+    public Plot(int x, int z, String world, int townId, String owner, FlagValue ownerPlot, FlagValue nopvp,
             FlagValue friendlyFire, FlagValue sanctuary, FlagValue protection, FlagValue creeperNerf) {
         this.x = x;
         this.z = z;
         this.world = world;
-        this.town = town;
+        this.townId = townId;
         this.owner = owner;
         this.ownerPlot = ownerPlot;
         this.nopvp = nopvp;
@@ -77,7 +85,16 @@ public class Plot extends Flagable {
      * @return
      */
     public String getTownName() {
-        return town;
+        Town t = TownManager.get().getTown(townId);
+        return t == null ? "Wilderness" : t.getName();
+    }
+
+    /**
+     * Name of the town that owns this plot.
+     * @return
+     */
+    public int getTownUUID() {
+        return townId;
     }
 
     /**
@@ -85,7 +102,7 @@ public class Plot extends Flagable {
      * @return
      */
     public Town getTown() {
-        return TownManager.get().getTown(town);
+        return TownManager.get().getTown(townId);
     }
 
     /**
@@ -94,6 +111,11 @@ public class Plot extends Flagable {
      */
     public String getPlotOwnerName() {
         return owner;
+    }
+    
+    public void setTownUUID(int id) {
+        this.townId = id;
+        this.setDirty(true);
     }
 
     /**
@@ -121,58 +143,54 @@ public class Plot extends Flagable {
         }
         return plot.getTownName().equals(this.getTownName());
     }
-
-    /*
-     * Database Stuff.
-     */
-    private final String PLOT_TABLE = "plots";
-    private final String OWNER_PLOT = "ownerPlot";
-    private final String NO_PVP = "nopvp";
-    private final String FRIENDLY_FIRE = "friendlyFire";
-    private final String SANCTUARY = "sanctuary";
-    private final String PROTECTION = "protection";
-    private final String CREEPER_NERF = "creeperNerf";
-    private final String X = "x";
-    private final String Z = "z";
-    private final String WORLD = "world";
-    private final String TOWN = "town";
-    private final String OWNER = "owner";
-
+    
     @Override
     public void load() {
-        ResultSet rs = null;
-
+        PlotAccess data = new PlotAccess();
         try {
-            rs = FiveStarTowns.database().getResultSet(PLOT_TABLE,
-                    FiveStarTowns.database().newQuery().add(X, x).add(Z, z).add(WORLD, world), 1);
-
-            if (rs != null && rs.next()) {
-                this.creeperNerf = FlagValue.getType(rs.getString(CREEPER_NERF));
-                this.friendlyFire = FlagValue.getType(rs.getString(FRIENDLY_FIRE));
-                this.nopvp = FlagValue.getType(rs.getString(NO_PVP));
-                this.ownerPlot = FlagValue.getType(rs.getString(OWNER_PLOT));
-                this.protection = FlagValue.getType(rs.getString(PROTECTION));
-                this.sanctuary = FlagValue.getType(rs.getString(SANCTUARY));
-                this.owner = rs.getString(OWNER);
-                this.town = rs.getString(TOWN);
-                this.world = rs.getString(WORLD);
-                this.z = rs.getInt(Z);
-                this.x = rs.getInt(X);
-            }
-        } catch (SQLException ex) {
-            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
-                    + PLOT_TABLE);
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            filter.put("x", x);
+            filter.put("z", z);
+            filter.put("world", world);
+            Database.get().load(data, filter);
+        } catch (DatabaseReadException ex) {
+            Canary.log.trace("Error Loading Town Data", ex);
         }
+        this.townId = data.townId;
+        this.owner = data.owner;
+        this.x = data.x;
+        this.z = data.z;
+        this.world = data.world;
+        this.creeperNerf = FlagValue.valueOf(data.creeperNerf);
+        this.friendlyFire = FlagValue.valueOf(data.friendlyFire);
+        this.nopvp = FlagValue.valueOf(data.nopvp);
+        this.ownerPlot = FlagValue.valueOf(data.ownerPlot);
+        this.protection = FlagValue.valueOf(data.protection);
+        this.sanctuary = FlagValue.valueOf(data.sanctuary);
     }
 
     @Override
     public void save() {
-        Query where = FiveStarTowns.database().newQuery();
-        where.add(X, x).add(Z, z).add(WORLD, world);
-        Query update = FiveStarTowns.database().newQuery();
-        update.add(TOWN, town).add(OWNER, owner).add(OWNER_PLOT, ownerPlot);
-        update.add(NO_PVP, nopvp).add(FRIENDLY_FIRE, friendlyFire).add(SANCTUARY, sanctuary);
-        update.add(PROTECTION, protection).add(CREEPER_NERF, creeperNerf);
-        FiveStarTowns.database().updateEntry(PLOT_TABLE, where, update);
+        PlotAccess data = new PlotAccess();
+        data.owner = this.owner;
+        data.townId = this.townId;
+        data.x = this.x;
+        data.z = this.z;
+        data.world = this.world;
+        data.creeperNerf = this.creeperNerf.toString();
+        data.friendlyFire = this.friendlyFire.toString();
+        data.nopvp = this.nopvp.toString();
+        data.ownerPlot = this.ownerPlot.toString();
+        data.protection = this.protection.toString();
+        data.sanctuary = this.sanctuary.toString();
+        try {
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            filter.put("x", x);
+            filter.put("z", z);
+            filter.put("world", world);
+            Database.get().update(data, filter);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Loading Town Data", ex);
+        }
     }
 }

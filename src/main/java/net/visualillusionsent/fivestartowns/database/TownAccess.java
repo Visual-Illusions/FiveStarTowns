@@ -1,6 +1,5 @@
 package net.visualillusionsent.fivestartowns.database;
 
-import java.util.List;
 import net.canarymod.database.Column;
 import net.canarymod.database.DataAccess;
 
@@ -11,29 +10,20 @@ import net.canarymod.database.DataAccess;
 public class TownAccess extends FlagAccess {
 
     public TownAccess() {
-        super("towns");
+        super("fst_towns");
     }
 
     /**
      * ID for this Town, serves as Primary Key, Auto Incremented.
      */
-    @Column(columnName = "id", dataType = Column.DataType.INTEGER, autoIncrement = true, columnType = Column.ColumnType.PRIMARY)
-    public int id;
+    @Column(columnName = "uuid", dataType = Column.DataType.INTEGER, autoIncrement = true, columnType = Column.ColumnType.PRIMARY)
+    public int uuid;
 
     /**
      * Name of this Town.
      */
     @Column(columnName = "name", dataType = Column.DataType.STRING)
     public String name;
-
-    @Column(columnName = "owner", dataType = Column.DataType.STRING)
-    public String owner;
-
-    @Column(columnName = "assistant", dataType = Column.DataType.STRING, isList = true)
-    public List<String> assistant;
-
-    @Column(columnName = "members", dataType = Column.DataType.STRING, isList = true)
-    public List<String> members;
 
     @Column(columnName = "balance", dataType = Column.DataType.DOUBLE)
     public double balance;

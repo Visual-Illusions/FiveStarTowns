@@ -1,6 +1,5 @@
 package net.visualillusionsent.fivestartowns.canary;
 
-import java.util.logging.Logger;
 import net.canarymod.Canary;
 import net.canarymod.commandsys.CommandDependencyException;
 import net.canarymod.database.Database;
@@ -11,6 +10,9 @@ import net.visualillusionsent.fivestartowns.canary.listeners.FiveStarTownsListen
 import net.visualillusionsent.fivestartowns.database.PlotAccess;
 import net.visualillusionsent.fivestartowns.database.TownAccess;
 import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
+import net.visualillusionsent.fivestartowns.job.JobManager;
+import net.visualillusionsent.fivestartowns.plot.PlotManager;
+import net.visualillusionsent.fivestartowns.town.TownManager;
 
 /**
  *
@@ -24,17 +26,20 @@ public class CanaryFiveStarTowns extends FiveStarTowns {
     public boolean enable() {
         instance = this;
         if (!this.createTables()) {
-            this.getLogman().logWarning("Error Creating/Updating tables. Five Star Towns"
+            this.getLogman().warn("Error Creating/Updating tables. Five Star Towns"
                     + "will not load.");
             return false;
         }
+        TownManager.get().load();
+        JobManager.get().load();
+        PlotManager.get().load();
         commands = new FSTCommandListener();
         listener = new FiveStarTownsListener();
         try {
             Canary.commands().registerCommands(commands, this, true);
         } catch (CommandDependencyException ex) {
-            this.getLogman().logWarning("Commands failed to register. Five Star Towns"
-                    + "will not load.");
+            this.getLogman().warn("Commands failed to register. Five Star Towns"
+                    + "will not load.", ex);
             return false;
         }
         Canary.hooks().registerListener(listener, this);
@@ -54,10 +59,5 @@ public class CanaryFiveStarTowns extends FiveStarTowns {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Logger getPluginLogger() {
-        return this.getLogman().getParent();
     }
 }

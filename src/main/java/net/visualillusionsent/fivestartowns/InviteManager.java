@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class InviteManager {
 
-    private static HashMap<String, String> invites = new HashMap<String, String>();
+    private static HashMap<String, Integer> invites = new HashMap<String, Integer>();
     private static InviteManager instance;
 
     public static InviteManager get() {
@@ -18,7 +18,7 @@ public class InviteManager {
         return instance;
     }
 
-    public void addInvite(String player, String town) {
+    public void addInvite(String player, int town) {
         if (invites.containsKey(player)) {
             invites.remove(player);
             invites.put(player, town);
@@ -37,11 +37,11 @@ public class InviteManager {
         }
     }
 
-    public String getInvite(String player) {
+    public int getInvite(String player) {
         if (invites.containsKey(player)) {
             return invites.get(player);
         }
-        return null;
+        return -1;
     }
 
 }

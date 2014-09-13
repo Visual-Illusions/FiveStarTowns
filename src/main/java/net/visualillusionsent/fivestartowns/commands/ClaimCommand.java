@@ -45,7 +45,7 @@ public class ClaimCommand extends FSTCommand {
             return;
         }
         Plot data = new Plot(player.getChunkX(), player.getChunkZ(), player.getWorldName(),
-                town.getName(), "", FlagValue.NULL, FlagValue.NULL,
+                town.getUUID(), "", FlagValue.NULL, FlagValue.NULL,
                 FlagValue.NULL, FlagValue.NULL, FlagValue.NULL, FlagValue.NULL);
         data.setDirty(true);
         PlotManager.get().addNewPlot(data);

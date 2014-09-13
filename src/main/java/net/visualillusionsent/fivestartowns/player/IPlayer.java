@@ -23,4 +23,6 @@ public interface IPlayer {
     public int getChunkZ();
 
     public String getWorldName();
+    
+    public String getUUID();
 }

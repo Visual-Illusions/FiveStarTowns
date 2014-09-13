@@ -37,4 +37,9 @@ public class CanaryPlayer implements IPlayer {
         return player.getWorld().getName();
     }
 
+    @Override
+    public String getUUID() {
+        return player.getUUIDString();
+    }
+
 }

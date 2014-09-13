@@ -24,7 +24,7 @@ public class Config {
             try {
                 file.createNewFile();
             } catch (IOException ex) {
-                Canary.logStacktrace("Unable to Create: " + file.getName(), ex);
+                Canary.log.trace("Unable to Create: " + file.getName(), ex);
             }
         }
         config = new PropertiesFile("plugins/config/FiveStarTowns/FiveStarTowns.properties");

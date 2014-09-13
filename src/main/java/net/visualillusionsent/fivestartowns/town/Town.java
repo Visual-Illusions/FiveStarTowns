@@ -1,20 +1,25 @@
 
 package net.visualillusionsent.fivestartowns.town;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import net.canarymod.Canary;
+import net.canarymod.ToolBox;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseReadException;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.FiveStarTowns;
-import net.visualillusionsent.fivestartowns.database.FSTDatabase;
-import net.visualillusionsent.fivestartowns.database.JDBCHelper;
+import net.visualillusionsent.fivestartowns.database.TownAccess;
 import net.visualillusionsent.fivestartowns.flag.FlagType;
 import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
+import net.visualillusionsent.fivestartowns.job.JobManager;
+import net.visualillusionsent.fivestartowns.job.JobType;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
 import net.visualillusionsent.fivestartowns.rank.RankManager;
 import net.visualillusionsent.fivestartowns.rank.TownRank;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -22,25 +27,38 @@ import net.visualillusionsent.fivestartowns.rank.TownRank;
  */
 public class Town extends Flagable {
 
+    public final int townId;
     /** Name of this Town. */
     public String name;
-    public String owner;
-    public List<String> assistant;
     public double balance;
     public int bonusPlots;
     public String welcome;
     public String farewell;
 
-    public Town(String name) {
-        this.name = name;
+    public Town(int uuid) {
+        this.townId = uuid;
+        this.load();
+    }
+    
+    /**
+     * Gets the UUID for this Town object.
+     * 
+     * @return unique id for this town 
+     */
+    public int getUUID() {
+        return this.townId;
     }
 
     /**
-     * Gets the name of the player who owns this town.
+     * Gets the names of the player who owns this town.
      * @return
      */
-    public String getOwnerName() {
-        return owner;
+    public List<String> getOwnerName() {
+        List<String> names = new ArrayList<String>();
+        for (TownPlayer tp : JobManager.get().getJobHolders(townId, JobType.OWNER.getID())) {
+            names.add(tp.getName());
+        };
+        return names;
     }
 
     /**
@@ -56,7 +74,11 @@ public class Town extends Flagable {
      * @return
      */
     public List<String> getAssistantName() {
-        return assistant;
+        List<String> names = new ArrayList<String>();
+        for (TownPlayer tp : JobManager.get().getJobHolders(townId, JobType.ASSISTANT.getID())) {
+            names.add(tp.getName());
+        };
+        return names;
     }
 
     /**
@@ -64,7 +86,7 @@ public class Town extends Flagable {
      * @return
      */
     public List<String> getMembers() {
-        return FiveStarTowns.database().getTownPlayerNames(name);
+        return TownManager.get().getMemberNames(townId);
     }
 
     /**
@@ -80,8 +102,8 @@ public class Town extends Flagable {
      * Get the TownPlayer instance of the town owner.
      * @return
      */
-    public TownPlayer getOwner() {
-        return TownManager.get().getTownPlayer(owner);
+    public List<TownPlayer> getOwner() {
+        return JobManager.get().getJobHolders(townId, JobType.OWNER.getID());
     }
 
     /**
@@ -89,11 +111,7 @@ public class Town extends Flagable {
      * @return
      */
     public List<TownPlayer> getAssistant() {
-        List<TownPlayer> list = new ArrayList<TownPlayer>();
-        for (String name : assistant) {
-            list.add(TownManager.get().getTownPlayer(name));
-        }
-        return list;
+        return JobManager.get().getJobHolders(townId, JobType.ASSISTANT.getID());
     }
 
     /**
@@ -101,18 +119,16 @@ public class Town extends Flagable {
      * @param tp Townplayer instance of the assistant to add.
      */
     public void addAssistant(TownPlayer tp) {
-        this.addAssistant(tp.getName());
+        JobManager.get().addJob(townId, tp.getUUID(), JobType.ASSISTANT);
     }
 
     /**
      * Add an Assistant to this town.
-     * @param name Name of the assistant to add.
+     * @param nameOrUUID Name of the assistant to add.
      */
-    public void addAssistant(String name) {
-        if (!assistant.contains(name)) {
-            assistant.add(name);
-            this.setDirty(true);
-        }
+    public void addAssistant(String nameOrUUID) {
+        String uuid = ToolBox.isUUID(nameOrUUID) ? nameOrUUID : ToolBox.usernameToUUID(nameOrUUID);
+        JobManager.get().addJob(this.townId, uuid, JobType.ASSISTANT);
     }
 
     /**
@@ -120,21 +136,16 @@ public class Town extends Flagable {
      * @param tp TownPlayer instance of the assitant to remove
      */
     public void removeAssistant(TownPlayer tp) {
-        this.removeAssistant(tp.getName());
+        JobManager.get().removeJob(this.townId, tp.getUUID(), JobType.ASSISTANT);
     }
 
     /**
      * Remove an assistant from this town.
      * @param name Name of the assistant to remove
      */
-    public void removeAssistant(String name) {
-        for (String s : assistant) {
-            if (s.equals(name)) {
-                assistant.remove(s);
-                this.setDirty(true);
-                break;
-            }
-        }
+    public void removeAssistant(String nameOrUUID) {
+        String uuid = ToolBox.isUUID(nameOrUUID) ? nameOrUUID : ToolBox.usernameToUUID(nameOrUUID);
+        JobManager.get().removeJob(this.townId, uuid, JobType.ASSISTANT);
     }
 
     /**
@@ -251,55 +262,50 @@ public class Town extends Flagable {
         return PlotManager.get().getTownPlots(this.getName()).length;
     }
 
-    public static final String TOWN_TABLE = "towns";
-    public static final String OWNER_PLOT = "ownerPlot";
-    public static final String NO_PVP = "nopvp";
-    public static final String FRIENDLY_FIRE = "friendlyFire";
-    public static final String SANCTUARY = "sanctuary";
-    public static final String PROTECTION = "protection";
-    public static final String CREEPER_NERF = "creeperNerf";
-    public static final String NAME = "name";
-    public static final String OWNER = "owner";
-    public static final String ASSISTANT = "assistant";
-    public static final String BONUS_PLOTS = "bonusPlots";
-    public static final String WELCOME = "welcome";
-    public static final String FAREWELL = "farewell";
-
     @Override
     public void load() {
-        ResultSet rs = null;
-
+        TownAccess data = new TownAccess();
         try {
-            rs = FiveStarTowns.database().getResultSet(TOWN_TABLE,
-                    FiveStarTowns.database().newQuery().add(NAME, name), 1);
-
-            if (rs != null && rs.next()) {
-                this.creeperNerf = FlagValue.getType(rs.getString(CREEPER_NERF));
-                this.friendlyFire = FlagValue.getType(rs.getString(FRIENDLY_FIRE));
-                this.nopvp = FlagValue.getType(rs.getString(NO_PVP));
-                this.ownerPlot = FlagValue.getType(rs.getString(OWNER_PLOT));
-                this.protection = FlagValue.getType(rs.getString(PROTECTION));
-                this.sanctuary = FlagValue.getType(rs.getString(SANCTUARY));
-                this.owner = rs.getString(OWNER);
-                this.bonusPlots = rs.getInt(BONUS_PLOTS);
-                this.welcome = rs.getString(WELCOME);
-                this.farewell = rs.getString(FAREWELL);
-            }
-        } catch (SQLException ex) {
-            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
-                    + TOWN_TABLE);
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            filter.put("uuid", this.townId);
+            Database.get().load(data, filter);
+        } catch (DatabaseReadException ex) {
+            Canary.log.trace("Error Loading Town Data", ex);
         }
+        this.name = data.name;
+        this.balance = data.balance;
+        this.bonusPlots = data.bonusPlots;
+        this.farewell = data.farewell;
+        this.welcome = data.welcome;
+        this.creeperNerf = FlagValue.valueOf(data.creeperNerf);
+        this.friendlyFire = FlagValue.valueOf(data.friendlyFire);
+        this.nopvp = FlagValue.valueOf(data.nopvp);
+        this.ownerPlot = FlagValue.valueOf(data.ownerPlot);
+        this.protection = FlagValue.valueOf(data.protection);
+        this.sanctuary = FlagValue.valueOf(data.sanctuary);
+        
     }
 
     @Override
     public void save() {
-        FSTDatabase.Query where = FiveStarTowns.database().newQuery();
-        where.add(NAME, name);
-        FSTDatabase.Query update = FiveStarTowns.database().newQuery();
-        update.add(OWNER, owner).add(ASSISTANT, JDBCHelper.getListString(assistant)).add(OWNER_PLOT, ownerPlot);
-        update.add(NO_PVP, nopvp).add(FRIENDLY_FIRE, friendlyFire).add(SANCTUARY, sanctuary);
-        update.add(PROTECTION, protection).add(CREEPER_NERF, creeperNerf).add(BONUS_PLOTS, bonusPlots);
-        update.add(WELCOME, welcome).add(FAREWELL, farewell);
-        FiveStarTowns.database().updateEntry(TOWN_TABLE, where, update);
+        TownAccess data = new TownAccess();
+        data.name = this.name;
+        data.balance = this.balance;
+        data.bonusPlots = this.bonusPlots;
+        data.farewell = this.farewell;
+        data.welcome = this.welcome;
+        data.creeperNerf = this.creeperNerf.toString();
+        data.friendlyFire = this.friendlyFire.toString();
+        data.nopvp = this.nopvp.toString();
+        data.ownerPlot = this.ownerPlot.toString();
+        data.protection = this.protection.toString();
+        data.sanctuary = this.sanctuary.toString();
+        try {
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            filter.put("uuid", this.townId);
+            Database.get().update(data, filter);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Loading Town Data", ex);
+        }
     }
 }

@@ -1,8 +1,9 @@
 package net.visualillusionsent.fivestartowns.database;
 
-import java.util.List;
 import net.canarymod.database.Column;
 import net.canarymod.database.DataAccess;
+
+import java.util.List;
 
 /**
  *
@@ -11,14 +12,14 @@ import net.canarymod.database.DataAccess;
 public class RankAccess extends DataAccess {
 
     public RankAccess() {
-        super("ranks");
+        super("fst_ranks");
     }
 
     /**
      * ID for this rank.
      */
-    @Column(columnName = "id", dataType = Column.DataType.INTEGER, autoIncrement = true)
-    public int id;
+    //@Column(columnName = "id", dataType = Column.DataType.INTEGER, autoIncrement = true)
+    //public int id;
 
     /**
      * Population needed for this Rank

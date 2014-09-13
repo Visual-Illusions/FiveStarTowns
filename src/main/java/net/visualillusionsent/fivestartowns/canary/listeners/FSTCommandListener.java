@@ -1,19 +1,13 @@
 package net.visualillusionsent.fivestartowns.canary.listeners;
 
-import net.visualillusionsent.fivestartowns.commands.InfoCommand;
-import net.visualillusionsent.fivestartowns.commands.ToggleFlagCommand;
-import net.visualillusionsent.fivestartowns.commands.FSTCommand;
-import net.visualillusionsent.fivestartowns.commands.AcceptInviteCommand;
-import net.visualillusionsent.fivestartowns.commands.InviteCommand;
-import net.visualillusionsent.fivestartowns.commands.CreateCommand;
-import net.visualillusionsent.fivestartowns.commands.ClaimCommand;
-import net.visualillusionsent.fivestartowns.commands.UnclaimCommand;
-import net.visualillusionsent.fivestartowns.player.CanaryPlayer;
-import java.util.HashMap;
 import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.chat.MessageReceiver;
 import net.canarymod.commandsys.Command;
 import net.canarymod.commandsys.CommandListener;
+import net.visualillusionsent.fivestartowns.commands.*;
+import net.visualillusionsent.fivestartowns.player.CanaryPlayer;
+
+import java.util.HashMap;
 
 /**
  *
@@ -54,6 +48,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onClaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
+            if (!ClaimCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
             ClaimCommand.get().execute(new CanaryPlayer((Player)caller), args);
         }
     }
@@ -66,6 +61,17 @@ public class FSTCommandListener implements CommandListener {
     public void onCreateCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             CreateCommand.get().execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
+
+    @Command(aliases = {"leave"},
+            toolTip = "/town leave",
+            description = "Leaves the player's current town.",
+            permissions = {},
+            parent = "town")
+    public void onLeaveCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            LeaveCommand.get().execute(new CanaryPlayer((Player)caller), args);
         }
     }
 

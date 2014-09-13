@@ -1,14 +1,19 @@
 package net.visualillusionsent.fivestartowns.canary.listeners;
 
+import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.api.entity.living.monster.Creeper;
 import net.canarymod.chat.Colors;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.entity.DamageHook;
+import net.canarymod.hook.player.ConnectionHook;
 import net.canarymod.hook.player.PlayerMoveHook;
 import net.canarymod.hook.world.ExplosionHook;
 import net.canarymod.plugin.PluginListener;
 import net.visualillusionsent.fivestartowns.Config;
+import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
 import net.visualillusionsent.fivestartowns.flag.FlagType;
 import net.visualillusionsent.fivestartowns.plot.Plot;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
@@ -21,6 +26,31 @@ import net.visualillusionsent.fivestartowns.town.TownPlayer;
  */
 public class FiveStarTownsListener implements PluginListener {
 
+
+    /*
+     * Creeper Explosion Check
+     */
+    @HookHandler
+    public void onLogin(ConnectionHook hook) {
+        TownPlayer tp = TownManager.get().getTownPlayer(hook.getPlayer().getUUIDString());
+        if (tp == null) {
+            TownPlayerAccess tpa = new TownPlayerAccess();
+            tpa.uuid = hook.getPlayer().getUUIDString();
+            tpa.name = hook.getPlayer().getName();
+            tpa.townUUID = -1;
+            
+            try {
+                Database.get().insert(tpa);
+            } catch (DatabaseWriteException ex) {
+                Canary.log.trace("Error inserting new TownPlayer data.", ex);
+            }
+            tp = new TownPlayer(tpa.uuid);
+            TownManager.get().addTownPlayer(tp);
+        }
+        Canary.log.info("Town id: " + tp.getTownUUID());
+        Canary.log.info("Player id: " + tp.getUUID());
+    }
+    
     @HookHandler
     public void onPlayerMove(PlayerMoveHook hook) {
         String to = "The Wilderness";

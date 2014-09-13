@@ -30,7 +30,7 @@ public class UnclaimCommand extends FSTCommand {
                     + "not owned by your town. You cannot unclaim it.");
             return;
         }
-        PlotManager.get().removePlot(plot);
+        plot.setTownUUID(-1);
 
         player.message(Config.get().getMessageHeader() + "Plot UnClaimed for " + Colors.GREEN + town.getName() + "!");
 

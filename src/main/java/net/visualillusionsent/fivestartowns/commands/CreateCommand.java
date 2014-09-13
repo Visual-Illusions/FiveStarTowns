@@ -1,14 +1,22 @@
 package net.visualillusionsent.fivestartowns.commands;
 
-import java.util.ArrayList;
+import net.canarymod.Canary;
 import net.canarymod.chat.Colors;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseReadException;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.Config;
-import net.visualillusionsent.fivestartowns.FiveStarTowns;
-import net.visualillusionsent.fivestartowns.database.FSTDatabase;
+import net.visualillusionsent.fivestartowns.database.TownAccess;
+import net.visualillusionsent.fivestartowns.job.JobManager;
+import net.visualillusionsent.fivestartowns.job.JobType;
 import net.visualillusionsent.fivestartowns.player.IPlayer;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
+
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,44 +31,71 @@ public class CreateCommand extends FSTCommand {
     }
 
     public void execute(IPlayer player, String[] command) {
-        if (!(command.length >= 1)) {
+        if (!(command.length >= 2)) {
             player.message(Config.get().getMessageHeader() + "Improper syntax. Please use:\n  "
                     + Colors.GREEN + this.getUsage());
             return;
         }
-        StringBuilder name = new StringBuilder();
+
+        TownPlayer tp = TownManager.get().getTownPlayer(player.getUUID());
+        if (tp.getTown() != null) {
+            player.message(Config.get().getMessageHeader() + "You are already in a town: " + Colors.GREEN +
+                    tp.getTownName());
+            return;
+        }
+        /*StringBuilder name = new StringBuilder();
         for (String s : command) {
             name.append(s).append(" ");
         }
-        String newName = name.toString().trim();
+        String newName = name.toString().trim();*/
+        String newName = command[1];
         if (TownManager.get().getTown(newName) != null) {
             player.message(Config.get().getMessageHeader() + "A town named " + Colors.GREEN
-                    + command[0] + Colors.WHITE + " already exists! Please pick a new name!");
+                    + command[1] + Colors.WHITE + " already exists! Please pick a new name!");
             return;
         }
         /* insert to database */
-        FSTDatabase.Query query = FiveStarTowns.database().newQuery();
-        query.add(Town.NAME, newName).add(Town.ASSISTANT, new ArrayList<String>(), true);
-        query.add(Town.BONUS_PLOTS, 0).add(Town.CREEPER_NERF, "FALSE").add(Town.FAREWELL, "You are now leaving " + newName + "!");
-        query.add(Town.FRIENDLY_FIRE, "FALSE").add(Town.NO_PVP, "FALSE").add(Town.OWNER, player.getName());
-        query.add(Town.OWNER_PLOT, "FALSE").add(Town.PROTECTION, "FALSE").add(Town.SANCTUARY, "FALSE");
-        query.add(Town.WELCOME, "Welcome to " + newName + "!");
-        FiveStarTowns.database().insertEntry(FSTDatabase.TOWN_PLAYER_TABLE, query);
+        TownAccess townA = new TownAccess();
+        townA.name = newName;
+        townA.balance = 0;
+        townA.bonusPlots = 0;
+        townA.farewell = String.format("You are now leaving %s!", newName);
+        townA.welcome = String.format("Welcome to %s!", newName);
+        townA.creeperNerf = "FALSE";
+        townA.friendlyFire = "FALSE";
+        townA.protection = "FALSE";
+        townA.sanctuary = "FALSE";
+        townA.ownerPlot = "FALSE";
+        townA.nopvp = "FALSE";
+        
+        try {
+            Database.get().insert(townA);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Inserting Town Data.", ex);
+        }
+        
         /* Create and load a town instance */
-        Town town = new Town(newName);
-        town.load();
+        HashMap<String, Object> filter = new HashMap<String, Object>();
+        filter.put("name", newName);
+        townA = new TownAccess();
+        try {
+            Database.get().load(townA, filter);
+        } catch (DatabaseReadException ex) {
+            Logger.getLogger(CreateCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        Town town = new Town(townA.uuid);
+        
         /* Register with FST */
         TownManager.get().addTown(town);
-
-        /* insert to database */
-        query = FiveStarTowns.database().newQuery();
-        query.add(TownPlayer.NAME, player.getName()).add(TownPlayer.TOWN_NAME, town.getName());
-        FiveStarTowns.database().insertEntry(FSTDatabase.TOWN_PLAYER_TABLE, query);
-        /* Create and load a townplayer instance */
-        TownPlayer townPlayer = new TownPlayer(player.getName());
-        townPlayer.load();
-        /* Register with FST */
-        TownManager.get().addTownPlayer(townPlayer);
+        
+        /* Update a new TownPlayer */
+        tp = TownManager.get().getTownPlayer(player.getUUID());
+        tp.setTown(town);
+        tp.save();
+        
+        
+        JobManager.get().addJob(town.getUUID(), tp.getUUID(), JobType.OWNER);
 
         player.message(Config.get().getMessageHeader() + "Congratulations! You are "
                 + "now the owner of " + Colors.GREEN + newName + "!");

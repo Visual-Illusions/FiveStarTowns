@@ -1,11 +1,17 @@
 
 package net.visualillusionsent.fivestartowns.town;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.canarymod.Canary;
+import net.canarymod.api.entity.living.humanoid.Player;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseReadException;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.Saveable;
-import net.visualillusionsent.fivestartowns.database.FSTDatabase;
+import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
+import net.visualillusionsent.fivestartowns.job.JobManager;
+import net.visualillusionsent.fivestartowns.job.JobType;
+
+import java.util.HashMap;
 
 /**
  *
@@ -13,11 +19,15 @@ import net.visualillusionsent.fivestartowns.database.FSTDatabase;
  */
 public class TownPlayer extends Saveable {
 
-    private final String name;
-    private String townName;
+    private final String uuid;
+    private String name;
+    private int townUUID;
+    private Player player;
 
-    public TownPlayer(String name) {
-        this.name = name;
+    public TownPlayer(String uuid) {
+        this.uuid = uuid;
+        player = Canary.getServer().getPlayerFromUUID(uuid);
+        this.load();
     }
 
     /**
@@ -25,15 +35,23 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public String getName() {
-        return name;
+        return player.getName();
+    }
+    
+    public String getUUID() {
+        return uuid;
     }
 
+    
+    public int getTownUUID() {
+        return townUUID;
+    }
     /**
      *
      * @return
      */
     public String getTownName() {
-        return townName;
+        return TownManager.get().getTown(townUUID).getName();
     }
 
     /**
@@ -41,18 +59,17 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public Town getTown() {
-        return TownManager.get().getTown(townName);
-    }
-
-    public void setTown(String townName) {
-        if (TownManager.get().getTown(townName) != null) {
-            this.townName = townName;
-            this.setDirty(true);
-        }
+        return TownManager.get().getTown(townUUID);
     }
 
     public void setTown(Town town) {
-        this.setTown(town.getName());
+        this.townUUID = town.getUUID();
+        this.setDirty(true);
+    }
+
+    public void setTown(int uuid) {
+        Town t = TownManager.get().getTown(uuid);
+        if (t != null) this.setTown(t);
     }
 
     /**
@@ -60,7 +77,7 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public boolean isOwner() {
-        return this.getTown().getOwnerName().equals(this.getName());
+        return JobManager.get().hasJob(townUUID, uuid, JobType.OWNER);
     }
 
     /**
@@ -68,36 +85,42 @@ public class TownPlayer extends Saveable {
      * @return
      */
     public boolean isAssistant() {
-        return this.getTown().getAssistantName().contains(this.getName());
+        return JobManager.get().hasJob(townUUID, uuid, JobType.ASSISTANT);
     }
 
-    public static final String TOWN_PLAYER_TABLE = "town_Players";
-    public static final String NAME = "name";
-    public static final String TOWN_NAME = "townName";
-
-    @Override
-    public void load() {
-        ResultSet rs = null;
-
-        try {
-            rs = FiveStarTowns.database().getResultSet(TOWN_PLAYER_TABLE,
-                    FiveStarTowns.database().newQuery().add(NAME, name), 1);
-
-            if (rs != null && rs.next()) {
-                this.townName = rs.getString(TOWN_NAME);
-            }
-        } catch (SQLException ex) {
-            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
-                    + TOWN_PLAYER_TABLE);
+    public void leaveTown() {
+        if (townUUID != -1) {
+            JobManager.get().removeAllJobs(player.getUUIDString());
+            townUUID = -1;
+            this.setDirty(true);
         }
     }
 
     @Override
+    public void load() {
+        TownPlayerAccess data = new TownPlayerAccess();
+        try {
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            filter.put("uuid", uuid);
+            Database.get().load(data, filter);
+        } catch (DatabaseReadException ex) {
+            Canary.log.trace("Error Loading TownPlayer Data", ex);
+        }
+        this.name = data.name;
+        this.townUUID = data.townUUID;
+    }
+
+    @Override
     public void save() {
-        FSTDatabase.Query where = FiveStarTowns.database().newQuery();
-        where.add(NAME, name);
-        FSTDatabase.Query update = FiveStarTowns.database().newQuery();
-        update.add(TOWN_NAME, townName);
-        FiveStarTowns.database().updateEntry(TOWN_PLAYER_TABLE, where, update);
+        TownPlayerAccess data = new TownPlayerAccess();
+        data.name = this.name;
+        data.townUUID = this.townUUID;
+        try {
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            filter.put("uuid", uuid);
+            Database.get().update(data, filter);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Loading TownPlayer Data", ex);
+        }
     }
 }
