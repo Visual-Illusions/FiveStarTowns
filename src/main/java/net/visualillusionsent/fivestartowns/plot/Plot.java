@@ -1,21 +1,17 @@
 package net.visualillusionsent.fivestartowns.plot;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import net.canarymod.Canary;
 import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseReadException;
 import net.canarymod.database.exceptions.DatabaseWriteException;
-import net.visualillusionsent.fivestartowns.FiveStarTowns;
-import net.visualillusionsent.fivestartowns.database.FSTDatabase.Query;
 import net.visualillusionsent.fivestartowns.database.PlotAccess;
-import net.visualillusionsent.fivestartowns.database.TownAccess;
 import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.visualillusionsent.fivestartowns.town.TownPlayer;
+
+import java.util.HashMap;
 
 /**
  *
@@ -161,12 +157,12 @@ public class Plot extends Flagable {
         this.x = data.x;
         this.z = data.z;
         this.world = data.world;
-        this.creeperNerf = FlagValue.valueOf(data.creeperNerf);
-        this.friendlyFire = FlagValue.valueOf(data.friendlyFire);
-        this.nopvp = FlagValue.valueOf(data.nopvp);
-        this.ownerPlot = FlagValue.valueOf(data.ownerPlot);
-        this.protection = FlagValue.valueOf(data.protection);
-        this.sanctuary = FlagValue.valueOf(data.sanctuary);
+        this.creeperNerf = FlagValue.getType(data.creeperNerf);
+        this.friendlyFire = FlagValue.getType(data.friendlyFire);
+        this.nopvp = FlagValue.getType(data.nopvp);
+        this.ownerPlot = FlagValue.getType(data.ownerPlot);
+        this.protection = FlagValue.getType(data.protection);
+        this.sanctuary = FlagValue.getType(data.sanctuary);
     }
 
     @Override

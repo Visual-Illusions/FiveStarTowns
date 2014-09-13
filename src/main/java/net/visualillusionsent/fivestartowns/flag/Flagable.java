@@ -1,14 +1,9 @@
 package net.visualillusionsent.fivestartowns.flag;
 
+import net.visualillusionsent.fivestartowns.Saveable;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.visualillusionsent.fivestartowns.Saveable;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.CREEPER_NERF;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.FRIENDLY_FIRE;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.NO_PVP;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.OWNER_PLOT;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.PROTECTION;
-import static net.visualillusionsent.fivestartowns.flag.FlagType.SANCTUARY;
 
 /**
  *
@@ -99,22 +94,22 @@ public abstract class Flagable extends Saveable {
      */
     public String[] getEnabledFlags() {
         List<String> flags = new ArrayList<String>();
-        if (this.creeperNerf.getBoolean()) {
+        if (this.creeperNerf != null && this.creeperNerf.getBoolean()) {
             flags.add(creeperNerf.toString());
         }
-        if (this.friendlyFire.getBoolean()) {
+        if (this.creeperNerf != null && this.friendlyFire.getBoolean()) {
             flags.add(this.friendlyFire.toString());
         }
-        if (this.nopvp.getBoolean()) {
+        if (this.nopvp != null && this.nopvp.getBoolean()) {
             flags.add(this.nopvp.toString());
         }
-        if (this.ownerPlot.getBoolean()) {
+        if (this.ownerPlot != null && this.ownerPlot.getBoolean()) {
             flags.add(this.ownerPlot.toString());
         }
-        if (this.protection.getBoolean()) {
+        if (this.protection != null && this.protection.getBoolean()) {
             flags.add(this.protection.toString());
         }
-        if (this.sanctuary.getBoolean()) {
+        if (this.sanctuary != null && this.sanctuary.getBoolean()) {
             flags.add(this.sanctuary.toString());
         }
         return flags.toArray(new String[flags.size()]);

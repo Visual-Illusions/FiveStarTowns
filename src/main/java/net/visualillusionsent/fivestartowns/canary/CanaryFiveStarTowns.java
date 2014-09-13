@@ -12,6 +12,7 @@ import net.visualillusionsent.fivestartowns.database.TownAccess;
 import net.visualillusionsent.fivestartowns.database.TownPlayerAccess;
 import net.visualillusionsent.fivestartowns.job.JobManager;
 import net.visualillusionsent.fivestartowns.plot.PlotManager;
+import net.visualillusionsent.fivestartowns.rank.RankManager;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 
 /**
@@ -32,6 +33,7 @@ public class CanaryFiveStarTowns extends FiveStarTowns {
             return false;
         }
         /* Load Database Data */
+        RankManager.get().load();
         TownManager.get().load();
         JobManager.get().load();
         PlotManager.get().load();

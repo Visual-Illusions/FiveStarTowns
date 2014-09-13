@@ -16,10 +16,10 @@ public class InfoCommand {
 
     public static void execute(IPlayer player, String[] command) {
         if (command.length > 1) {
-            Town town = TownManager.get().getTown(command[0]);
+            Town town = TownManager.get().getTown(command[1]);
             if (town == null) {
                 player.message(Config.get().getMessageHeader() + "The town "
-                    + Colors.GREEN + command[0] + Colors.WHITE + " does not exist.");
+                    + Colors.GREEN + command[1] + Colors.WHITE + " does not exist.");
                 return;
             }
             player.message(Config.get().getMessageHeader() + "The town "
@@ -55,9 +55,9 @@ public class InfoCommand {
             player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plots: "
                     + Colors.WHITE + town.getCurrentClaimCount() + "/" + town.getMaxClaimCount());
             player.message(Colors.BLACK + "-- " + Colors.GREEN + "Flags enabled: "
-                    + Colors.WHITE + town.getEnabledFlags());
+                    + Colors.WHITE + town.getEnabledFlags().toString());
             player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plot Flags enabled: "
-                    + Colors.WHITE + plot.getEnabledFlags());
+                    + Colors.WHITE + plot.getEnabledFlags().toString());
             return;
         }
     }

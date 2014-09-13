@@ -1,14 +1,17 @@
 package net.visualillusionsent.fivestartowns.rank;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import net.canarymod.Canary;
-import net.visualillusionsent.fivestartowns.FiveStarTowns;
+import net.canarymod.database.DataAccess;
+import net.canarymod.database.Database;
+import net.canarymod.database.exceptions.DatabaseReadException;
+import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.Saveable;
-import net.visualillusionsent.fivestartowns.database.JDBCHelper;
+import net.visualillusionsent.fivestartowns.database.RankAccess;
 import net.visualillusionsent.fivestartowns.town.Town;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -66,29 +69,100 @@ public class RankManager extends Saveable {
 
     @Override
     public void load() {
+        ranks.clear();
 
-        ResultSet rs = null;
-
+        List<DataAccess> rankData = new ArrayList<DataAccess>();
+        RankAccess rankAccess = new RankAccess();
         try {
-            rs = FiveStarTowns.database().getResultSet(RANK_TABLE, null, 1000);
-            if (rs != null) {
-                while (rs.next()) {
-                    TownRank toLoad = new TownRank(rs.getInt(POPULATION_REQ), rs.getString(TOWN_TYPE),
-                            rs.getString(MAYOR_PREFIX), rs.getString(MAYOR_SUFFIX), rs.getString(ASSISTANT_PREFIX),
-                            rs.getString(ASSISTANT_SUFFIX), rs.getString(TOWN_PREFIX), rs.getString(TOWN_SUFFIX),
-                            ((List<String>)JDBCHelper.getList(JDBCHelper.DataType.STRING, rs.getString(FLAGS))));
-                    ranks.add(toLoad);
-                }
-            }
-        } catch (SQLException ex) {
-            FiveStarTowns.get().getPluginLogger().warning("Error Querying MySQL ResultSet in "
-                    + RANK_TABLE);
+            HashMap<String, Object> filter = new HashMap<String, Object>();
+            Database.get().loadAll(rankAccess, rankData, filter);
+        } catch (DatabaseReadException ex) {
+            Canary.log.trace("Error Loading Town Data", ex);
         }
+
+        if(rankData.size() == 0) {
+            createDefaults();
+            load();
+            return;
+        }
+
+        for (DataAccess da : rankData) {
+            RankAccess data = (RankAccess) da;
+
+            TownRank toLoad = new TownRank(data.populationReq, data.townType,
+                    data.mayorPrefix, data.mayorSuffix, data.assistantPrefix,
+                    data.assistantSuffix, data.townPrefix, data.townSuffix,
+                    data.flags);
+            ranks.add(toLoad);
+        }
+
+
     }
 
     @Override
     public void save() {
         /** these don't get saved quite yet. */
+    }
+
+    public void createDefaults() {
+        ArrayList<String> list = new ArrayList<String>();
+        RankAccess data = new RankAccess();
+
+        data.populationReq = 0;
+        data.townType = "Tribe";
+        data.mayorPrefix = "Tribe Leader";
+        data.mayorSuffix = "";
+        data.assistantPrefix = "Tribe Elder";
+        data.assistantSuffix = "";
+        data.townPrefix = "";
+        data.townSuffix = "Tribe";
+        list.add("protection");
+        list.add("friendlyFire");
+        data.flags = list;
+
+        try {
+            Database.get().insert(data);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Inserting Rank Data", ex);
+        }
+
+        data = new RankAccess();
+        data.populationReq = 10;
+        data.townType = "Village";
+        data.mayorPrefix = "Chief";
+        data.mayorSuffix = "";
+        data.assistantPrefix = "Village Elder";
+        data.assistantSuffix = "";
+        data.townPrefix = "";
+        data.townSuffix = "Village";
+        list.add("noPvp");
+        list.add("creeperNerf");
+        data.flags = list;
+
+        try {
+            Database.get().insert(data);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Inserting Rank Data", ex);
+        }
+
+        data = new RankAccess();
+        data.populationReq = 30;
+        data.townType = "Town";
+        data.mayorPrefix = "Mayor";
+        data.mayorSuffix = "";
+        data.assistantPrefix = "Town Assistant";
+        data.assistantSuffix = "";
+        data.townPrefix = "";
+        data.townSuffix = "Town";
+        list.add("ownerPlot");
+        list.add("sanctuary");
+        data.flags = list;
+
+        try {
+            Database.get().insert(data);
+        } catch (DatabaseWriteException ex) {
+            Canary.log.trace("Error Inserting Rank Data", ex);
+        }
     }
 
 }

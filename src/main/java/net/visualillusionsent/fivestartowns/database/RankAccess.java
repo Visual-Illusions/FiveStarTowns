@@ -36,13 +36,13 @@ public class RankAccess extends DataAccess {
     @Column(columnName = "mayorPrefix", dataType = Column.DataType.STRING)
     public String mayorPrefix;
 
-    @Column(columnName = "mayorPrefix", dataType = Column.DataType.STRING)
+    @Column(columnName = "mayorSuffix", dataType = Column.DataType.STRING)
     public String mayorSuffix;
 
     @Column(columnName = "assistantPrefix", dataType = Column.DataType.STRING)
     public String assistantPrefix;
 
-    @Column(columnName = "assistantPrefix", dataType = Column.DataType.STRING)
+    @Column(columnName = "assistantSuffix", dataType = Column.DataType.STRING)
     public String assistantSuffix;
 
     @Column(columnName = "townPrefix", dataType = Column.DataType.STRING)

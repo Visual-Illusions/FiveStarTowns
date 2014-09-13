@@ -19,41 +19,41 @@ public class ToggleFlagCommand {
 
     public static void execute(IPlayer player, String[] command) {
         Town town = TownManager.get().getTownFromPlayer(player);
-        if (command.length != 3) {
+        if (command.length != 4) {
             player.message(Config.get().getMessageHeader() + "Correct Usage: "
                     + Colors.GREEN + "/town flag [global|plot] [flagname] [NULL|TRUE|FALSE]" +
                     Colors.WHITE + "   " + "Toggle [flagname] for global or plot.");
             player.message(Colors.GREEN + "Available flags: " + town.getTownRank().getFlags().toString());
             return;
         }
-        FlagType type = FlagType.fromString(command[1]);
-        if (!command[0].equalsIgnoreCase("plot") && !command[0].equalsIgnoreCase("global")) {
+        if (!command[1].equalsIgnoreCase("plot") && !command[1].equalsIgnoreCase("global")) {
             player.message(Config.get().getMessageHeader() + "Not a valid " +
                     "zone type: " + Colors.GREEN + command[1]);
             player.message(Colors.GREEN + "Available zones: global, plot");
             return;
         }
+        FlagType type = FlagType.fromString(command[2]);
         if (type == null) {
             player.message(Config.get().getMessageHeader() + "Not a valid " +
                     "flag type: " + Colors.GREEN + command[1]);
             player.message(Colors.GREEN + "Available flags: " + town.getTownRank().getFlags().toString());
             return;
         }
-        if (!town.canUseFlag(command[1])) {
+        if (!town.canUseFlag(type.getName())) {
             player.message(Config.get().getMessageHeader() + "Your town cannot " +
-                    "use this flag: " + Colors.GREEN + command[1]);
+                    "use this flag: " + Colors.GREEN + command[2]);
             player.message(Colors.GREEN + "Available flags: " + town.getTownRank().getFlags().toString());
             return;
         }
-        FlagValue value = FlagValue.getType(command[2]);
+        FlagValue value = FlagValue.getType(command[3]);
         if (value == null) {
             player.message(Config.get().getMessageHeader() + "Not a valid flag " +
-                    "value: " + Colors.GREEN + command[2]);
+                    "value: " + Colors.GREEN + command[3]);
             player.message(Colors.GREEN + "Available flag values: NULL, TRUE, FALSE" + town.getTownRank().getFlags().toString());
             return;
         }
         TownPlayer tp = TownManager.get().getTownPlayer(player);
-        if (type.equals(FlagType.OWNER_PLOT) || command[0].equalsIgnoreCase("plot")) {
+        if (type.equals(FlagType.OWNER_PLOT) || command[1].equalsIgnoreCase("plot")) {
             Plot plot = PlotManager.get().getFSTPlot(player);
             if (plot == null || !plot.getTownName().equals(tp.getTownName())) {
                 player.message(Config.get().getMessageHeader() + "This plot " +
@@ -65,7 +65,7 @@ public class ToggleFlagCommand {
                     Colors.GREEN + value.toString());
             return;
         }
-        else if (command[0].equalsIgnoreCase("global")) {
+        else if (command[1].equalsIgnoreCase("global")) {
             town.setFlagValue(type, value);
             player.message(Config.get().getMessageHeader() + "Flag " + Colors.GREEN +
                     type.getName() + Colors.WHITE + "has been toggled to " + Colors.GREEN +
@@ -76,7 +76,7 @@ public class ToggleFlagCommand {
 
     public static boolean canUseCommand(IPlayer player) {
         TownPlayer tp = TownManager.get().getTownPlayer(player);
-        if (tp != null && (tp.isAssistant() || tp.isOwner())) {
+        if (tp != null && !tp.isAssistant() && !tp.isOwner()) {
             player.message(Config.get().getMessageHeader() + "You must be a "
                     + "town " + Colors.GREEN + "Owner " + Colors.WHITE + "or "
                     + Colors.GREEN + "Assistant " + Colors.WHITE + "to use this command!");

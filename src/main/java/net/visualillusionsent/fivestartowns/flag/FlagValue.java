@@ -28,7 +28,7 @@ public enum FlagValue {
     }
 
     public boolean getBoolean() {
-        return value.equals("NULL") ? null : value.equals("TRUE");
+        return value.equals("NULL") ? false : value.equals("TRUE");
     }
 
     @Override

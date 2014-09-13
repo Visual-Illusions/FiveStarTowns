@@ -7,15 +7,11 @@ import net.canarymod.commandsys.CommandListener;
 import net.visualillusionsent.fivestartowns.commands.*;
 import net.visualillusionsent.fivestartowns.player.CanaryPlayer;
 
-import java.util.HashMap;
-
 /**
  *
  * @author Somners
  */
 public class FSTCommandListener implements CommandListener {
-
-    private HashMap<String, FSTCommand> commands;
 
     public FSTCommandListener() {
     }
@@ -48,7 +44,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onClaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            if (!ClaimCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            if (!ClaimCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             ClaimCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
@@ -93,7 +89,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onInviteCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            if (!InviteCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            if (!InviteCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             InviteCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
@@ -105,7 +101,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onToggleFlagCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            if (!ToggleFlagCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            if (!ToggleFlagCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             ToggleFlagCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
@@ -117,7 +113,7 @@ public class FSTCommandListener implements CommandListener {
             parent = "town")
     public void onUnclaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
-            if (!UnclaimCommand.get().canUseCommand(new CanaryPlayer((Player) caller))) return;
+            if (!UnclaimCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             UnclaimCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }

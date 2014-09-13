@@ -141,7 +141,7 @@ public class Town extends Flagable {
 
     /**
      * Remove an assistant from this town.
-     * @param name Name of the assistant to remove
+     * @param nameOrUUID Name of the assistant to remove
      */
     public void removeAssistant(String nameOrUUID) {
         String uuid = ToolBox.isUUID(nameOrUUID) ? nameOrUUID : ToolBox.usernameToUUID(nameOrUUID);
@@ -277,12 +277,12 @@ public class Town extends Flagable {
         this.bonusPlots = data.bonusPlots;
         this.farewell = data.farewell;
         this.welcome = data.welcome;
-        this.creeperNerf = FlagValue.valueOf(data.creeperNerf);
-        this.friendlyFire = FlagValue.valueOf(data.friendlyFire);
-        this.nopvp = FlagValue.valueOf(data.nopvp);
-        this.ownerPlot = FlagValue.valueOf(data.ownerPlot);
-        this.protection = FlagValue.valueOf(data.protection);
-        this.sanctuary = FlagValue.valueOf(data.sanctuary);
+        this.creeperNerf = FlagValue.getType(data.creeperNerf);
+        this.friendlyFire = FlagValue.getType(data.friendlyFire);
+        this.nopvp = FlagValue.getType(data.nopvp);
+        this.ownerPlot = FlagValue.getType(data.ownerPlot);
+        this.protection = FlagValue.getType(data.protection);
+        this.sanctuary = FlagValue.getType(data.sanctuary);
         
     }
 

@@ -28,13 +28,17 @@ public class TownPlayer extends Saveable {
     }
 
     /**
-     *
-     * @return
+     * Gets the name of this TownPlayer
+     * @return this players name
      */
     public String getName() {
         return name;
     }
-    
+
+    /**
+     * Gets the minecraft UUID of this player
+     * @return this players UUID
+     */
     public String getUUID() {
         return uuid;
     }
@@ -44,47 +48,61 @@ public class TownPlayer extends Saveable {
         return townUUID;
     }
     /**
-     *
-     * @return
+     * Gets the name of the town this player belongs to.
+     * @return the town name
      */
     public String getTownName() {
         return TownManager.get().getTown(townUUID).getName();
     }
 
     /**
-     *
-     * @return
+     * gets the Town this player belongs to
+     * @return this players Town
      */
     public Town getTown() {
         return TownManager.get().getTown(townUUID);
     }
 
+    /**
+     * Sets this players Town.
+     * @param town The Town this player is to join.
+     */
     public void setTown(Town town) {
+        if (townUUID != -1) {
+            leaveTown();
+        }
         this.townUUID = town.getUUID();
         this.setDirty(true);
     }
 
+    /**
+     * Sets this players town
+     * @param uuid The ID of the town this player is to join.
+     */
     public void setTown(int uuid) {
         Town t = TownManager.get().getTown(uuid);
         if (t != null) this.setTown(t);
     }
 
     /**
-     *
-     * @return
+     * Checks if this player is the owner of the town it belongs to.
+     * @return returns true if this player is an owner, false otherwise.
      */
     public boolean isOwner() {
         return JobManager.get().hasJob(townUUID, uuid, JobType.OWNER);
     }
 
     /**
-     *
-     * @return
+     * Checks if this player is the Assistant of the town it belongs to.
+     * @return returns true if this player is an assistant, false otherwise.
      */
     public boolean isAssistant() {
         return JobManager.get().hasJob(townUUID, uuid, JobType.ASSISTANT);
     }
 
+    /**
+     * Leaves the players current town.
+     */
     public void leaveTown() {
         if (townUUID != -1) {
             JobManager.get().removeAllJobs(uuid);
