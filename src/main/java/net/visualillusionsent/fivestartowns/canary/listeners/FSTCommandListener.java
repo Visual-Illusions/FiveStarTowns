@@ -117,4 +117,16 @@ public class FSTCommandListener implements CommandListener {
             UnclaimCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
+
+    @Command(aliases = {"kick"},
+            toolTip = "/town kick [playername]",
+            description = "Kicks this player from your town.",
+            permissions = {},
+            parent = "town")
+    public void onKickCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            if (!KickCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
+            KickCommand.execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
 }
