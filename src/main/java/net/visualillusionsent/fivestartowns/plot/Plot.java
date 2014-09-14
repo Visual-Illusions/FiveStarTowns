@@ -5,6 +5,7 @@ import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseReadException;
 import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.visualillusionsent.fivestartowns.database.PlotAccess;
+import net.visualillusionsent.fivestartowns.flag.FlagType;
 import net.visualillusionsent.fivestartowns.flag.FlagValue;
 import net.visualillusionsent.fivestartowns.flag.Flagable;
 import net.visualillusionsent.fivestartowns.town.Town;
@@ -138,6 +139,23 @@ public class Plot extends Flagable {
             return false;
         }
         return plot.getTownName().equals(this.getTownName());
+    }
+
+    @Override
+    public FlagValue getFlagValue(FlagType type) {
+        FlagValue flag = super.getFlagValue(type);
+        if (flag.equals(FlagValue.NULL)) {
+            flag = getTown().getFlagValue(type);
+        }
+        return flag;
+    }
+
+    @Override
+    public boolean isFlagEnabled(FlagType type) {
+        if (getFlagValue(type).equals(FlagValue.NULL)) {
+            return getTown().isFlagEnabled(type);
+        }
+        return super.isFlagEnabled(type);
     }
     
     @Override

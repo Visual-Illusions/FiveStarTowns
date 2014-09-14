@@ -8,6 +8,8 @@ import net.canarymod.database.Database;
 import net.canarymod.database.exceptions.DatabaseWriteException;
 import net.canarymod.hook.HookHandler;
 import net.canarymod.hook.entity.DamageHook;
+import net.canarymod.hook.player.BlockDestroyHook;
+import net.canarymod.hook.player.BlockPlaceHook;
 import net.canarymod.hook.player.ConnectionHook;
 import net.canarymod.hook.player.PlayerMoveHook;
 import net.canarymod.hook.world.ExplosionHook;
@@ -86,16 +88,16 @@ public class FiveStarTownsListener implements PluginListener {
             Player defender = (Player)hook.getDefender();
             Plot a = PlotManager.get().getFSTPlot(attacker);
             Plot d = PlotManager.get().getFSTPlot(defender);
-            if ((a != null && a.getFlagValue(FlagType.NO_PVP).getBoolean()) ||
-                    (d != null && d.getFlagValue(FlagType.NO_PVP).getBoolean())) {
+            if ((a != null && a.isFlagEnabled(FlagType.NO_PVP)) ||
+                    (d != null && d.isFlagEnabled(FlagType.NO_PVP))) {
                 hook.setCanceled();
                 return;
             }
             TownPlayer tpa = TownManager.get().getTownPlayer(attacker);
             TownPlayer tpd = TownManager.get().getTownPlayer(defender);
             if ((tpa != null && tpd != null) && tpa.getTownName().equals(tpd.getTownName())) {
-                if ((a != null && !a.getFlagValue(FlagType.FRIENDLY_FIRE).getBoolean()) ||
-                        (d != null && !d.getFlagValue(FlagType.FRIENDLY_FIRE).getBoolean())) {
+                if ((a != null && !a.isFlagEnabled(FlagType.FRIENDLY_FIRE)) ||
+                        (d != null && !d.isFlagEnabled(FlagType.FRIENDLY_FIRE))) {
                     hook.setCanceled();
                     return;
                 }
@@ -110,8 +112,70 @@ public class FiveStarTownsListener implements PluginListener {
     public void onCreeperCreep(ExplosionHook hook) {
         if (hook.getEntity() instanceof Creeper) {
             Plot p = PlotManager.get().getFSTPlot(hook.getEntity().getLocation());
-            if (p != null && p.getFlagValue(FlagType.CREEPER_NERF).getBoolean()) {
+            if (p != null && p.isFlagEnabled(FlagType.CREEPER_NERF)) {
                 hook.setCanceled();
+            }
+        }
+    }
+
+    /*
+     * Protection Check
+     */
+    @HookHandler
+    public void onBlockBreak(BlockDestroyHook hook) {
+            Plot p = PlotManager.get().getFSTPlot(hook.getBlock().getLocation());
+            if (p != null){
+                TownPlayer tp = TownManager.get().getTownPlayer(hook.getPlayer());
+                /* Check protection flag */
+                if (p.isFlagEnabled(FlagType.PROTECTION)) {
+                    /* player isn't in town CANCEL! */
+                    if (tp.getTown() == null) {
+                        hook.setCanceled();
+                        return;
+                    }
+                    /* player is in a different town CANCEL! */
+                    if (!tp.getTown().equals(p.getTown())) {
+                        hook.setCanceled();
+                        return;
+                    }
+                }
+                /* check plot owner stuff */
+                if (p.getPlotOwner() != null) {
+                    if (!p.getPlotOwner().equals(tp)) {
+                        hook.setCanceled();
+                        return;
+                    }
+                }
+            }
+    }
+
+    /*
+     * Protection Check
+     */
+    @HookHandler
+    public void onBlockPlace(BlockPlaceHook hook) {
+        Plot p = PlotManager.get().getFSTPlot(hook.getBlockPlaced().getLocation());
+        if (p != null){
+            TownPlayer tp = TownManager.get().getTownPlayer(hook.getPlayer());
+                /* Check protection flag */
+            if (p.isFlagEnabled(FlagType.PROTECTION)) {
+                    /* player isn't in town CANCEL! */
+                if (tp.getTown() == null) {
+                    hook.setCanceled();
+                    return;
+                }
+                    /* player is in a different town CANCEL! */
+                if (!tp.getTown().equals(p.getTown())) {
+                    hook.setCanceled();
+                    return;
+                }
+            }
+                /* check plot owner stuff */
+            if (p.getPlotOwner() != null) {
+                if (!p.getPlotOwner().equals(tp)) {
+                    hook.setCanceled();
+                    return;
+                }
             }
         }
     }

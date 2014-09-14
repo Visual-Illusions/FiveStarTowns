@@ -24,14 +24,14 @@ public class UnclaimCommand {
             return;
         }
         plot.setTownUUID(-1);
-
+        PlotManager.get().removePlot(plot);
         player.message(Config.get().getMessageHeader() + "Plot UnClaimed for " + Colors.GREEN + town.getName() + "!");
 
     }
 
     public static boolean canUseCommand(IPlayer player) {
         TownPlayer tp = TownManager.get().getTownPlayer(player);
-        if (tp != null && (tp.isAssistant() || tp.isOwner())) {
+        if (tp != null && !tp.isAssistant() && !tp.isOwner()) {
             player.message(Config.get().getMessageHeader() + "You must be a "
                     + "town " + Colors.GREEN + "Owner " + Colors.WHITE + "or "
                     + Colors.GREEN + "Assistant " + Colors.WHITE + "to use this command!");
