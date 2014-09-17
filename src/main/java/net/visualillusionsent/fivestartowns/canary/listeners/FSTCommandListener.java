@@ -1,9 +1,13 @@
 package net.visualillusionsent.fivestartowns.canary.listeners;
 
+import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
+import net.canarymod.chat.Colors;
 import net.canarymod.chat.MessageReceiver;
 import net.canarymod.commandsys.Command;
 import net.canarymod.commandsys.CommandListener;
+import net.canarymod.help.HelpNode;
+import net.visualillusionsent.fivestartowns.Config;
 import net.visualillusionsent.fivestartowns.commands.*;
 import net.visualillusionsent.fivestartowns.player.CanaryPlayer;
 
@@ -13,16 +17,47 @@ import net.visualillusionsent.fivestartowns.player.CanaryPlayer;
  */
 public class FSTCommandListener implements CommandListener {
 
+    private String[] helpMenu = new String[] {
+        "town",
+        "town info",
+        "town invite",
+        "town accept",
+        "town leave",
+        "town claim",
+        "town unclaim",
+        "town flag",
+        "town create",
+        "town kick"
+
+    };
+    
     public FSTCommandListener() {
     }
 
     @Command(aliases = {"town", "t"},
-            toolTip = "/town ?",
-            description = "Five Start Towns Base Command",
-            permissions = {"fivestartowns"})
+            toolTip = "/town [help page number]",
+            description = "Five Start Towns Base/Help Command",
+            permissions = {"fivestartowns"},
+            helpLookup = "town")
     public void onBaseCommand(MessageReceiver caller, String[] args) {
         if (!(caller instanceof Player)) {
             return;
+        }
+        short page = 1;
+        if (args.length > 1) {
+            try {
+                page = Short.valueOf(args[1]);
+            } catch (NumberFormatException ex) {
+                
+            }
+        }
+        caller.message(Config.get().getMessageHeader() + "FiveStarTowns Help Page #"
+                + Colors.GREEN + String.valueOf(page) + "/" + String.valueOf(helpMenu.length / 5));
+        for (int i = (5 * (page - 1)); i <( 5 * page) ; i++) {
+            if (helpMenu.length > i) {
+                HelpNode help = Canary.help().getRawHelp(this.helpMenu[i]);
+                caller.message(Colors.GREEN + help.getTooltip() + "  " + Colors.WHITE + help.getDescription());
+            }
         }
     }
 
@@ -30,7 +65,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town accept",
             description = "Accepts an invite to the last town to send you an invite.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town accept")
     public void onAcceptInviteCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             AcceptInviteCommand.execute(new CanaryPlayer((Player)caller), args);
@@ -41,7 +77,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town claim",
             description = "Claims the plot you are standing in.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town claim")
     public void onClaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             if (!ClaimCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
@@ -53,7 +90,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town create [name]",
             description = "Creates a Town with he given name.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town create")
     public void onCreateCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             CreateCommand.execute(new CanaryPlayer((Player)caller), args);
@@ -64,7 +102,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town leave",
             description = "Leaves the player's current town.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town leave")
     public void onLeaveCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             LeaveCommand.execute(new CanaryPlayer((Player)caller), args);
@@ -75,7 +114,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town info",
             description = "Get the plot you are standing in, or the given towns info.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town info")
     public void onInfoCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             InfoCommand.execute(new CanaryPlayer((Player)caller), args);
@@ -86,7 +126,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town invite [playername]",
             description = "Invites this player to your town.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town invite")
     public void onInviteCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             if (!InviteCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
@@ -98,7 +139,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town flag [global|plot] [flagname] [NULL|TRUE|FALSE]",
             description = "Toggle [flagname] for global or plot.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town flag")
     public void onToggleFlagCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             if (!ToggleFlagCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
@@ -110,7 +152,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/unclaim",
             description = "Unclaims the plot you are standing in.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town unclaim")
     public void onUnclaimCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             if (!UnclaimCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
@@ -122,7 +165,8 @@ public class FSTCommandListener implements CommandListener {
             toolTip = "/town kick [playername]",
             description = "Kicks this player from your town.",
             permissions = {},
-            parent = "town")
+            parent = "town",
+            helpLookup = "town kick")
     public void onKickCommand(MessageReceiver caller, String[] args) {
         if (caller instanceof Player) {
             if (!KickCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
