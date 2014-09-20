@@ -12,21 +12,35 @@ package net.visualillusionsent.fivestartowns.job;
  */
 public enum JobType {
     
-    OWNER(0),
-    ASSISTANT(1);
+    OWNER(0, "Owner"),
+    ASSISTANT(1, "Assistant"),
+    Builder(2, "Builder");
     
     private int id;
-    JobType(int i) {
+    private String name;
+    JobType(int i, String n) {
         id = i;
+        name = n;
     }
     
     public int getID() {
         return id;
     }
     
+    public String getName() {
+        return name;
+    }
+    
     public static JobType fromID(int id) {
         for (JobType jt : JobType.values()) {
             if (jt.getID() == id) return jt;
+        }
+        return null;
+    }
+    
+    public static JobType fromName(String name) {
+        for (JobType jt : JobType.values()) {
+            if (jt.getName().equalsIgnoreCase(name)) return jt;
         }
         return null;
     }

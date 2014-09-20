@@ -27,7 +27,9 @@ public class FSTCommandListener implements CommandListener {
         "town unclaim",
         "town flag",
         "town create",
-        "town kick"
+        "town kick",
+        "town promote",
+        "town demote"
 
     };
     
@@ -48,7 +50,7 @@ public class FSTCommandListener implements CommandListener {
             try {
                 page = Short.valueOf(args[1]);
             } catch (NumberFormatException ex) {
-                
+                // Do nothing, just don't error out here.
             }
         }
         caller.message(Config.get().getMessageHeader() + "FiveStarTowns Help Page #"
@@ -171,6 +173,32 @@ public class FSTCommandListener implements CommandListener {
         if (caller instanceof Player) {
             if (!KickCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             KickCommand.execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
+
+    @Command(aliases = {"promote"},
+            toolTip = "/town promote [playername] [job]",
+            description = "promotes the player to the given job.",
+            permissions = {},
+            parent = "town",
+            helpLookup = "town promote")
+    public void onPromoteCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            if (!PromoteCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
+            PromoteCommand.execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
+
+    @Command(aliases = {"demote"},
+            toolTip = "/town demote",
+            description = "demotes the player from their job.",
+            permissions = {},
+            parent = "town",
+            helpLookup = "town demote")
+    public void onDemoteCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            if (!DemoteCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
+            DemoteCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 }

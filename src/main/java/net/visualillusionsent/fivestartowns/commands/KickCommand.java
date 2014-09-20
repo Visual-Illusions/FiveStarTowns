@@ -21,6 +21,12 @@ public class KickCommand {
         TownPlayer tp = TownManager.get().getTownPlayer(player);
         Town town = tp.getTown();
         TownPlayer toKick = TownManager.get().getTownPlayer(command[1]);
+        if (toKick == null) {
+            player.message(Config.get().getMessageHeader() + "Player, "
+                    + Colors.GREEN + toKick.getName() + Colors.WHITE
+                    + ", is not a valid player.");
+            return;
+        }
         if (!toKick.getTown().equals(town)) {
             player.message(Config.get().getMessageHeader() + "Player, "
                     + Colors.GREEN + toKick.getName() + Colors.WHITE

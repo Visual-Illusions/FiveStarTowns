@@ -18,16 +18,16 @@ public class Config {
     private int plotMultiplier;
 
     public Config() {
-        File file = new File("plugins/config/FiveStarTowns/FiveStarTowns.properties");
+        File file = new File("config/FiveStarTowns/FiveStarTowns.properties");
         if (!file.exists()) {
-            new File("plugins/config/FiveStarTowns/").mkdirs();
+            new File("config/FiveStarTowns/").mkdirs();
             try {
                 file.createNewFile();
             } catch (IOException ex) {
                 Canary.log.trace("Unable to Create: " + file.getName(), ex);
             }
         }
-        config = new PropertiesFile("plugins/config/FiveStarTowns/FiveStarTowns.properties");
+        config = new PropertiesFile("config/FiveStarTowns/FiveStarTowns.properties");
         this.load();
     }
 
