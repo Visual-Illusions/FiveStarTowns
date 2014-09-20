@@ -44,13 +44,6 @@ public class DemoteCommand {
                     + ", is not in your town.");
             return;
         }
-        JobType jobType = JobType.fromName(command[2]);
-        if (jobType == null) {
-            player.message(Config.get().getMessageHeader() + "Job,  "
-                    + Colors.GREEN + command[2] + Colors.WHITE
-                    + ", is not a valid Job.");
-            return;
-        }
         if (toRemove.equals(tp)) {
             player.message(Config.get().getMessageHeader() + "You cannot demote"
                     + " yourself Silly!!!");

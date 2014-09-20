@@ -190,7 +190,7 @@ public class FSTCommandListener implements CommandListener {
     }
 
     @Command(aliases = {"demote"},
-            toolTip = "/town demote",
+            toolTip = "/town demote <player name>",
             description = "demotes the player from their job.",
             permissions = {},
             parent = "town",
@@ -199,6 +199,19 @@ public class FSTCommandListener implements CommandListener {
         if (caller instanceof Player) {
             if (!DemoteCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             DemoteCommand.execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
+
+    @Command(aliases = {"me"},
+            toolTip = "/town me <player name>",
+            description = "Get info about yourself, or the player if specified",
+            permissions = {},
+            parent = "town",
+            helpLookup = "town me")
+    public void onMeCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            if (!MeCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
+            MeCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 }

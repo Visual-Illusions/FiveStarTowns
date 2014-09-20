@@ -39,7 +39,7 @@ public class PromoteCommand {
                     + ", is not a valid player.");
             return;
         }
-        if (!toPromote.getTown().equals(town)) {
+        if (!town.equals(toPromote.getTown())) {
             player.message(Config.get().getMessageHeader() + "Player, "
                     + Colors.GREEN + toPromote.getName() + Colors.WHITE
                     + ", is not in your town.");

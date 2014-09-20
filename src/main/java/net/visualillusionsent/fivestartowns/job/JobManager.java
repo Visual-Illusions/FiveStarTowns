@@ -68,7 +68,7 @@ public class JobManager extends Saveable {
             while (it.hasNext()) {
                 j = it.next();
                 if (j.townId == townId && j.jobId == type.getID() && j.playerId.equals(playerId)) {
-                    jobs.remove(j);
+                    it.remove();
                     try {
                         HashMap<String, Object> filter = new HashMap<String, Object>();
                         filter.put("jobId", j.jobId);
@@ -96,7 +96,7 @@ public class JobManager extends Saveable {
                         filter.put("playerId", j.playerId);
                         filter.put("townId", j.townId);
                         Database.get().remove(j, filter);
-                        jobs.remove(j);
+                        it.remove();
                     } catch (DatabaseWriteException ex) {
                         Canary.log.trace("Error removing Job Data", ex);
                     }
@@ -118,7 +118,7 @@ public class JobManager extends Saveable {
                         filter.put("playerId", j.playerId);
                         filter.put("townId", j.townId);
                         Database.get().remove(j, filter);
-                        jobs.remove(j);
+                        it.remove();
                     } catch (DatabaseWriteException ex) {
                         Canary.log.trace("Error removing Job Data", ex);
                     }
@@ -143,7 +143,23 @@ public class JobManager extends Saveable {
         }
         return players;
     }
+    
+    public List<JobType> getJobs(int townId, String playerId) {
+        List<JobType> jobTypes = new ArrayList<JobType>();
 
+        synchronized (lock) {
+            Iterator<JobAccess> it = jobs.iterator();
+            JobAccess j = null;
+            while (it.hasNext()) {
+                j = it.next();
+                if (j.townId == townId && j.playerId .equals(playerId)) {
+                    JobType tp = JobType.fromID(j.jobId);
+                    if (tp != null) jobTypes.add(tp);
+                }
+            }
+        }
+        return jobTypes;
+    }
 
     @Override
     public void load() {
