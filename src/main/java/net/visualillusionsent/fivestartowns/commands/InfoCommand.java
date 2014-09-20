@@ -7,6 +7,8 @@ import net.visualillusionsent.fivestartowns.plot.PlotManager;
 import net.visualillusionsent.fivestartowns.town.Town;
 import net.visualillusionsent.fivestartowns.town.TownManager;
 import net.canarymod.chat.Colors;
+import net.visualillusionsent.fivestartowns.job.JobManager;
+import net.visualillusionsent.fivestartowns.job.JobType;
 
 /**
  *
@@ -54,10 +56,24 @@ public class InfoCommand {
                     Colors.WHITE + town.getAssistant().toString());
             player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plots: "
                     + Colors.WHITE + town.getCurrentClaimCount() + "/" + town.getMaxClaimCount());
+            /* prepare town flags */
+            StringBuilder townSB = new StringBuilder();
+            for (String s : town.getEnabledFlags()) {
+                townSB.append(" ").append(s).append(",");
+            }
+            if (townSB.length() > 0) townSB.deleteCharAt(townSB.length() - 1);
             player.message(Colors.BLACK + "-- " + Colors.GREEN + "Flags enabled: "
-                    + Colors.WHITE + town.getEnabledFlags().toString());
-            player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plot Flags enabled: "
-                    + Colors.WHITE + plot.getEnabledFlags().toString());
+                    + Colors.WHITE + townSB.toString());
+            if (plot != null) {
+            /* prepare plot flags */
+                StringBuilder plotSB = new StringBuilder();
+                for (String s : plot.getEnabledFlags()) {
+                    plotSB.append(" ").append(s).append(",");
+                }
+                if (townSB.length() > 0) plotSB.deleteCharAt(plotSB.length() - 1);
+                player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plot Flags enabled: "
+                        + Colors.WHITE + plotSB.toString());
+            }
             return;
         }
     }

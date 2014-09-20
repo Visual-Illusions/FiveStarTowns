@@ -29,7 +29,7 @@ public class Plot extends Flagable {
     /** Town Name that owns this plot. */
     private int townId = -1;
     /** Player Name that owns this plot. */
-    private String owner = "";
+    private String ownerId = "";
 
     public Plot(int x, int z, String world) {
         this.x = x;
@@ -44,7 +44,7 @@ public class Plot extends Flagable {
         this.z = z;
         this.world = world;
         this.townId = townId;
-        this.owner = owner;
+        this.ownerId = owner;
         this.ownerPlot = ownerPlot;
         this.nopvp = nopvp;
         this.friendlyFire = friendlyFire;
@@ -107,7 +107,7 @@ public class Plot extends Flagable {
      * @return
      */
     public String getPlotOwnerName() {
-        return owner;
+        return ownerId;
     }
     
     public void setTownUUID(int id) {
@@ -120,7 +120,32 @@ public class Plot extends Flagable {
      * @return
      */
     public TownPlayer getPlotOwner() {
-        return TownManager.get().getTownPlayer(owner);
+        return TownManager.get().getTownPlayer(ownerId);
+    }
+
+    /**
+     * Sets the owner of this plot. For Player Plot OwnerShip.
+     */
+    public void setPlotOwner(String uuid) {
+        ownerId = uuid;
+        this.setDirty(true);
+    }
+
+    /**
+     * Sets the owner of this plot. For Player Plot OwnerShip.
+     */
+    public void setPlotOwner(TownPlayer player) {
+        ownerId = player.getUUID();
+        this.setDirty(true);
+    }
+
+    /**
+     * Resets the owner of this plot. For Player Plot OwnerShip. There will be no
+     * owner after this is run.
+     */
+    public void clearPlotOwner() {
+        ownerId = null;
+        this.setDirty(true);
     }
 
     public boolean isPlotEqual(int x, int z, String world) {
@@ -171,7 +196,7 @@ public class Plot extends Flagable {
             Canary.log.trace("Error Loading Town Data", ex);
         }
         this.townId = data.townId;
-        this.owner = data.owner;
+        this.ownerId = data.owner;
         this.x = data.x;
         this.z = data.z;
         this.world = data.world;
@@ -186,7 +211,7 @@ public class Plot extends Flagable {
     @Override
     public void save() {
         PlotAccess data = new PlotAccess();
-        data.owner = this.owner;
+        data.owner = this.ownerId;
         data.townId = this.townId;
         data.x = this.x;
         data.z = this.z;

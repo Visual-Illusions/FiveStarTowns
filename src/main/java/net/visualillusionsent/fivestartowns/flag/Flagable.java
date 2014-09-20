@@ -95,22 +95,22 @@ public abstract class Flagable extends Saveable {
     public String[] getEnabledFlags() {
         List<String> flags = new ArrayList<String>();
         if (this.creeperNerf != null && this.creeperNerf.getBoolean()) {
-            flags.add(creeperNerf.toString());
+            flags.add("creeperNerf");
         }
         if (this.creeperNerf != null && this.friendlyFire.getBoolean()) {
-            flags.add(this.friendlyFire.toString());
+            flags.add("friendlyFire");
         }
         if (this.nopvp != null && this.nopvp.getBoolean()) {
-            flags.add(this.nopvp.toString());
+            flags.add("nopvp");
         }
         if (this.ownerPlot != null && this.ownerPlot.getBoolean()) {
-            flags.add(this.ownerPlot.toString());
+            flags.add("ownerPlot");
         }
         if (this.protection != null && this.protection.getBoolean()) {
-            flags.add(this.protection.toString());
+            flags.add("protection");
         }
         if (this.sanctuary != null && this.sanctuary.getBoolean()) {
-            flags.add(this.sanctuary.toString());
+            flags.add("sanctuary");
         }
         return flags.toArray(new String[flags.size()]);
     }

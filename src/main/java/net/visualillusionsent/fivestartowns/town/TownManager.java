@@ -43,6 +43,7 @@ public class TownManager extends Saveable {
     }
 
     public TownPlayer getTownPlayer(String nameOrUUID) {
+        if (nameOrUUID == null) return null;
         String uuid = ToolBox.isUUID(nameOrUUID) ? nameOrUUID : ToolBox.usernameToUUID(nameOrUUID);
         for (TownPlayer p : players) {
             if (p.getUUID().equals(uuid)) {

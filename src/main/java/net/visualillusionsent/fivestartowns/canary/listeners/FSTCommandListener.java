@@ -9,7 +9,10 @@ import net.canarymod.commandsys.CommandListener;
 import net.canarymod.help.HelpNode;
 import net.visualillusionsent.fivestartowns.Config;
 import net.visualillusionsent.fivestartowns.commands.*;
+import net.visualillusionsent.fivestartowns.job.JobManager;
 import net.visualillusionsent.fivestartowns.player.CanaryPlayer;
+import net.visualillusionsent.fivestartowns.plot.PlotManager;
+import net.visualillusionsent.fivestartowns.town.TownManager;
 
 /**
  *
@@ -29,7 +32,11 @@ public class FSTCommandListener implements CommandListener {
         "town create",
         "town kick",
         "town promote",
-        "town demote"
+        "town demote",
+        "town me",
+        "town save",
+        "town giveplot",
+        "town removeowner"
 
     };
     
@@ -39,7 +46,7 @@ public class FSTCommandListener implements CommandListener {
     @Command(aliases = {"town", "t"},
             toolTip = "/town [help page number]",
             description = "Five Start Towns Base/Help Command",
-            permissions = {"fivestartowns"},
+            permissions = {"fivestartowns.town"},
             helpLookup = "town")
     public void onBaseCommand(MessageReceiver caller, String[] args) {
         if (!(caller instanceof Player)) {
@@ -212,6 +219,45 @@ public class FSTCommandListener implements CommandListener {
         if (caller instanceof Player) {
             if (!MeCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
             MeCommand.execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
+
+    @Command(aliases = {"me"},
+            toolTip = "/town save",
+            description = "Saves all Town Data to the database",
+            permissions = {"fivestartowns.save"},
+            parent = "town",
+            helpLookup = "town save")
+    public void onSaveCommand(MessageReceiver caller, String[] args) {
+        TownManager.get().save();
+        JobManager.get().save();
+        PlotManager.get().save();
+        caller.message(Config.get().getMessageHeader() + "All data saved!");
+    }
+
+    @Command(aliases = {"giveplot"},
+            toolTip = "/town giveplot <player name>",
+            description = "gives a plot to the player",
+            permissions = {},
+            parent = "town",
+            helpLookup = "town giveplot")
+    public void onGivePlotCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            if (!GivePlotCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
+            GivePlotCommand.execute(new CanaryPlayer((Player)caller), args);
+        }
+    }
+
+    @Command(aliases = {"removeowner"},
+            toolTip = "/town removeowner",
+            description = "removes a plot from the player",
+            permissions = {},
+            parent = "town",
+            helpLookup = "town removeowner")
+    public void onRemovePlotCommand(MessageReceiver caller, String[] args) {
+        if (caller instanceof Player) {
+            if (!RemovePlotCommand.canUseCommand(new CanaryPlayer((Player) caller))) return;
+            RemovePlotCommand.execute(new CanaryPlayer((Player)caller), args);
         }
     }
 }

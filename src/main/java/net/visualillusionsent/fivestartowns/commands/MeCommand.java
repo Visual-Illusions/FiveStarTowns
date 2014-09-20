@@ -48,7 +48,7 @@ public class MeCommand {
         for (JobType jt : JobManager.get().getJobs(tp.getTownUUID(), tp.getUUID())) {
             jobSB.append(" ").append(jt.getName()).append(",");
         }
-        jobSB.deleteCharAt(jobSB.length() - 1);
+        if (jobSB.length() > 0) jobSB.deleteCharAt(jobSB.length() - 1);
         player.message(Colors.BLACK + "-- " + Colors.GREEN + "Jobs: " +
                 Colors.WHITE + jobSB.toString());
 

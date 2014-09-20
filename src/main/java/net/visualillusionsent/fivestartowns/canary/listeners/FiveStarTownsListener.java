@@ -30,7 +30,7 @@ public class FiveStarTownsListener implements PluginListener {
 
 
     /*
-     * Creeper Explosion Check
+     * Login Hook, handles initializing player data.
      */
     @HookHandler
     public void onLogin(ConnectionHook hook) {
@@ -141,6 +141,7 @@ public class FiveStarTownsListener implements PluginListener {
                 }
                 /* check plot owner stuff */
                 if (p.getPlotOwner() != null) {
+                    /* player is not the plots owner */
                     if (!p.getPlotOwner().equals(tp)) {
                         hook.setCanceled();
                         return;
