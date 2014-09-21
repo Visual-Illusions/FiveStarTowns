@@ -18,14 +18,14 @@ import net.visualillusionsent.fivestartowns.town.TownPlayer;
 public class MeCommand {
     
     public static void execute(IPlayer player, String[] command) {
-        if (command.length > 1) {
-            
-        }
 
         TownPlayer tp = TownManager.get().getTownPlayer(player);
+        if (command.length > 1) {
+            tp = TownManager.get().getTownPlayer(command[1]);
+        }
         if (tp == null) {
             player.message(Config.get().getMessageHeader() + "Player, "
-                    + Colors.GREEN + "TODO" + Colors.WHITE
+                    + Colors.GREEN + command[1] + Colors.WHITE
                     + ", is not a valid player.");
             return;
         }

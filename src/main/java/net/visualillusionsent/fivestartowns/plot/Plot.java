@@ -103,11 +103,24 @@ public class Plot extends Flagable {
     }
 
     /**
+     * Get the UUID of the owner of this plot within the town.
+     * @return
+     */
+    public String getPlotOwnerID() {
+        return ownerId;
+    }
+
+    /**
      * Get the name of the owner of this plot within the town.
      * @return
      */
     public String getPlotOwnerName() {
-        return ownerId;
+        TownPlayer tp = TownManager.get().getTownPlayer(ownerId);
+        String ownerName = "Nobody";
+        if (tp != null) {
+            ownerName = tp.getName();
+        }
+        return ownerName;
     }
     
     public void setTownUUID(int id) {

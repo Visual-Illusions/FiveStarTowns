@@ -76,6 +76,28 @@ public class FiveStarTownsListener implements PluginListener {
                 hook.getPlayer().message(Colors.BLACK + " | " + Colors.WHITE + toPlot.getTown().getWelcome());
             }
         }
+        /* Tell people if someone owns this plot */
+        String fromName = "Nobody", toName = "Nobody";
+        if (fromPlot != null) {
+            if (fromPlot.getPlotOwner() != null) {
+                fromName = fromPlot.getPlotOwnerName();
+            }
+        }
+        if (toPlot != null) {
+            if (toPlot.getPlotOwner() != null) {
+                toName = toPlot.getPlotOwnerName();
+            }
+        }
+        if (!fromName.equals(toName)) {
+            if (!fromName.equals("Nobody")) {
+                hook.getPlayer().message(Colors.BLACK + " | " + Colors.WHITE +
+                        "You are now leaving " + Colors.GREEN + fromName + Colors.WHITE + "'s Plot");
+            }
+            if (!toName.equals("Nobody")) {
+                hook.getPlayer().message(Colors.BLACK + " | " + Colors.WHITE +
+                        "You are now Entering " + Colors.GREEN + toName + Colors.WHITE + "'s Plot");
+            }
+        }
     }
 
     /*

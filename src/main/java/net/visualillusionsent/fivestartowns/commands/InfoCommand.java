@@ -73,7 +73,15 @@ public class InfoCommand {
                 if (townSB.length() > 0) plotSB.deleteCharAt(plotSB.length() - 1);
                 player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plot Flags enabled: "
                         + Colors.WHITE + plotSB.toString());
+            } else {
+                return;
             }
+            String owner = "Nobody";
+            if (plot.getPlotOwner() != null) {
+                owner = plot.getPlotOwner().getName();
+            }
+                player.message(Colors.BLACK + "-- " + Colors.GREEN + "Plot Owner: "
+                        + Colors.WHITE + owner);
             return;
         }
     }
