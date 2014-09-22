@@ -49,10 +49,9 @@ public class ClaimCommand {
 
     public static boolean canUseCommand(IPlayer player) {
         TownPlayer tp = TownManager.get().getTownPlayer(player);
-        if (tp != null && (tp.isAssistant() || tp.isOwner())) {
+        if (tp != null && !tp.isOwner()) {
             player.message(Config.get().getMessageHeader() + "You must be a "
-                    + "town " + Colors.GREEN + "Owner " + Colors.WHITE + "or "
-                    + Colors.GREEN + "Assistant " + Colors.WHITE + "to use this command!");
+                    + "town " + Colors.GREEN + "Owner " + Colors.WHITE + "to use this command!");
             return false;
         }
         return true;
